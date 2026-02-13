@@ -1,0 +1,33 @@
+# Root gitignore
+node_modules/
+.env*
+*.zip
+*.log
+.DS_Store
+
+# Mobile specific
+mobile/.expo/
+mobile/dist/
+mobile/android/
+mobile/ios/
+mobile/google-services.json
+mobile/*.json
+!mobile/package.json
+!mobile/app.json
+!mobile/tsconfig.json
+!mobile/eas.json
+!mobile/babel.config.js
+!mobile/metro.config.js
+
+# Client specific
+client/.next/
+client/out/
+client/build/
+client/.vercel/
+
+# Sensitive files
+*.pem
+*.key
+*.jks
+*.p12
+shree-sarwadnya-firebase-adminsdk-*.json

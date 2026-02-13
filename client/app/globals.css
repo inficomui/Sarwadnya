@@ -1,0 +1,156 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  /* Set default sans to Inter */
+  --font-heading: var(--font-heading);
+  /* Add heading font */
+  --font-mono: var(--font-geist-mono);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Custom Button Colors */
+  --color-btn-primary-bg: var(--btn-primary-bg);
+  --color-btn-primary-text: var(--btn-primary-text);
+}
+
+/* Existing Theme Commented Out
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #00A651;
+  --secondary: #1F2937;
+  --accent: #F59E0B;
+}
+*/
+
+:root {
+  /* Corporate Trust (Light Mode) */
+  --background: #FFFFFF;
+  /* Pure White */
+  --foreground: #1A1A1A;
+  /* Almost Black */
+
+  --card: #F8F9FA;
+  /* Off-White */
+  --card-foreground: #1A1A1A;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+
+  --primary: #C5A059;
+  /* Muted Gold */
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #000000;
+  /* Black */
+  --secondary-foreground: #C5A059;
+
+  --muted: #F3F4F6;
+  --muted-foreground: #4B5563;
+  /* Gray-600 */
+
+  --accent: #F8F9FA;
+  --accent-foreground: #1A1A1A;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+
+  --border: #E5E7EB;
+  /* Gray-200 */
+  --input: #E5E7EB;
+  --ring: #C5A059;
+
+  --radius: 0.5rem;
+
+  /* Custom Button Theme Variables */
+  --btn-primary-bg: #000000;
+  --btn-primary-text: #C5A059;
+}
+
+.dark {
+  /* Premium Night (Dark Mode) */
+  --background: #0A0A0A;
+  /* Rich Black */
+  --foreground: #EDEDED;
+  /* Soft White */
+
+  --card: #171717;
+  /* Dark Grey */
+  --card-foreground: #EDEDED;
+
+  --popover: #171717;
+  --popover-foreground: #EDEDED;
+
+  --primary: #D4AF37;
+  /* Bright Gold */
+  --primary-foreground: #000000;
+
+  --secondary: #262626;
+  /* Neutral-800 */
+  --secondary-foreground: #EDEDED;
+
+  --muted: #171717;
+  --muted-foreground: #A1A1AA;
+  /* Gray-400 */
+
+  --accent: #262626;
+  --accent-foreground: #EDEDED;
+
+  --destructive: #7f1d1d;
+  --destructive-foreground: #fafafa;
+
+  --border: #262626;
+  /* Neutral-800 */
+  --input: #262626;
+  --ring: #D4AF37;
+
+  /* Custom Button Theme Variables */
+  --btn-primary-bg: #C5A059;
+  --btn-primary-text: #000000;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+button {
+  cursor: pointer;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 87.5%;
+  }
+}
