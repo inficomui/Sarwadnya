@@ -30,4 +30,7 @@ client/.vercel/
 *.key
 *.jks
 *.p12
+*.keystore
+*CREDENTIALS*
+*password*
 shree-sarwadnya-firebase-adminsdk-*.json
