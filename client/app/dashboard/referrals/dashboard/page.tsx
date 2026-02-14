@@ -229,7 +229,6 @@ export default function ReferralDashboardPage() {
                                             <th className="px-6 py-4 text-left">Date</th>
                                             <th className="px-6 py-4 text-left">Status</th>
                                             <th className="px-6 py-4 text-right">Amount</th>
-                                            <th className="px-6 py-4 text-right">Net Amount</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-border">
@@ -262,9 +261,6 @@ export default function ReferralDashboardPage() {
                                                 </td>
                                                 <td className="px-6 py-4 text-right font-medium">
                                                     ₹{Number(earning.amount).toLocaleString('en-IN')}
-                                                </td>
-                                                <td className="px-6 py-4 text-right font-bold text-primary">
-                                                    ₹{Number(earning.net_amount).toLocaleString('en-IN')}
                                                 </td>
                                             </tr>
                                         ))}

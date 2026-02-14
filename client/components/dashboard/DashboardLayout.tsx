@@ -167,7 +167,7 @@ const DashboardLayout = ({ children, sidebarItems, user, onLogout, isLoggingOut 
                         ) : (
                             <>
                                 {/* No Investment Warning */}
-                                {(dashboardData?.data?.financials?.total_deposited === 0 || dashboardData?.data?.profile?.is_payout_restricted) && !isLimitReached && (
+                                {(dashboardData?.data?.financials?.total_deposited === 0 || dashboardData?.data?.profile?.is_payout_restricted) && !isLimitReached && user?.role !== 'admin' && (
                                     <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-4 rounded-r-lg flex items-center justify-between shadow-sm mb-4">
                                         <div className="flex items-center gap-3">
                                             <div className="p-2 bg-amber-100 dark:bg-amber-900/40 rounded-full text-amber-600 dark:text-amber-400 shrink-0">
