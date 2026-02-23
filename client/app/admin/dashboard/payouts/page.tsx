@@ -1,15 +1,109 @@
 "use client";
 import React, { useState } from "react";
 import { AdminTable } from "@/components/admin/AdminTable";
-import { useGetAdminPayoutsByRangeQuery } from "@/redux/apies/adminApi";
+import { useGetAdminPayoutsByRangeQuery, useGetAdminUserBankDetailsQuery } from "@/redux/apies/adminApi";
 import { useGetUsersQuery } from "@/redux/apies/usersCrudApi";
 import { useMaturePayoutMutation } from "@/redux/apies/payoutApi";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import FormattedDate from "@/components/common/FormattedDate";
-import { Calendar, Search, Filter, CheckCircle, Loader2, ChevronDown, Check, X } from "lucide-react";
+import { Calendar, Search, Filter, CheckCircle, Loader2, ChevronDown, Check, X, Eye, Building2, CreditCard, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
-// import { toast } from "sonner";
+
+const BankDetailsModal = ({ userId, isOpen, onClose }: { userId: number | null, isOpen: boolean, onClose: () => void }) => {
+    const { data: bankData, isLoading } = useGetAdminUserBankDetailsQuery(userId ?? 0, {
+        skip: !isOpen || !userId,
+        refetchOnMountOrArgChange: true,
+    });
+
+    const copyToClipboard = (text: string, label: string) => {
+        navigator.clipboard.writeText(text);
+        toast.success(`${label} copied!`);
+    };
+
+    if (!isOpen) return null;
+
+    const banks = Array.isArray(bankData?.data) ? bankData.data : (bankData?.data ? [bankData.data] : []);
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
+            <div className="bg-card w-full max-w-md rounded-xl p-6 shadow-xl border border-border flex flex-col max-h-[90vh]">
+                <div className="flex justify-between items-center mb-4 pb-3 border-b border-border">
+                    <h2 className="text-xl font-bold flex items-center gap-2">
+                        <Building2 className="text-primary w-5 h-5" />
+                        Bank Details
+                    </h2>
+                    <button onClick={onClose} className="p-1 hover:bg-muted rounded-full transition-colors">
+                        <X size={20} className="text-muted-foreground" />
+                    </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
+                    {isLoading ? (
+                        <div className="flex justify-center p-8"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+                    ) : banks.length > 0 ? (
+                        <div className="space-y-4">
+                            {banks.map((bank: any, index: number) => (
+                                <div key={bank.id || index} className="p-4 rounded-xl border border-border bg-muted/10 space-y-3 relative">
+                                    {(bank.is_primary === 1 || bank.is_primary === true) && (
+                                        <span className="absolute top-3 right-3 text-[10px] font-bold uppercase text-green-600 bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
+                                            Primary
+                                        </span>
+                                    )}
+                                    <div className="flex items-center gap-3 mb-2 pr-12">
+                                        <div className="w-10 h-10 bg-primary/10 flex items-center justify-center rounded-lg border border-primary/20 shrink-0">
+                                            <CreditCard className="text-primary w-5 h-5" />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="font-bold text-sm truncate" title={bank.bank_name}>{bank.bank_name}</p>
+                                            <p className="text-xs text-muted-foreground truncate" title={bank.account_holder_name}>{bank.account_holder_name}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2 text-sm">
+                                        <div className="flex justify-between items-center bg-background p-2 rounded border border-border/50 group hover:border-border transition-colors">
+                                            <span className="text-muted-foreground text-xs whitespace-nowrap mr-2">A/C No:</span>
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <span className="font-mono font-medium truncate">{bank.account_number}</span>
+                                                <button onClick={() => copyToClipboard(bank.account_number, "Account Number")} className="text-muted-foreground hover:text-primary shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" title="Copy Account Number">
+                                                    <Copy size={14} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-center bg-background p-2 rounded border border-border/50 group hover:border-border transition-colors">
+                                            <span className="text-muted-foreground text-xs whitespace-nowrap mr-2">IFSC:</span>
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <span className="font-mono font-medium uppercase truncate">{bank.ifsc_code}</span>
+                                                <button onClick={() => copyToClipboard(bank.ifsc_code, "IFSC Code")} className="text-muted-foreground hover:text-primary shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" title="Copy IFSC Code">
+                                                    <Copy size={14} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {bank.branch_name && (
+                                            <div className="flex justify-between items-center bg-background p-2 rounded border border-border/50">
+                                                <span className="text-muted-foreground text-xs whitespace-nowrap mr-2">Branch:</span>
+                                                <span className="font-medium text-xs truncate" title={bank.branch_name}>{bank.branch_name}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="p-8 text-center text-muted-foreground flex flex-col items-center gap-3">
+                            <CreditCard className="w-10 h-10 opacity-20" />
+                            <p>No bank details found for this user.</p>
+                        </div>
+                    )}
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-border flex justify-end">
+                    <Button onClick={onClose} variant="default" className="w-full sm:w-auto">Close</Button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export default function AdminPayoutsPage() {
     const { adminUser } = useAdminAuth();
@@ -32,6 +126,9 @@ export default function AdminPayoutsPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [isSearchTriggered, setIsSearchTriggered] = useState(true); // Auto-trigger on mount
     const [maturingPayoutId, setMaturingPayoutId] = useState<number | null>(null);
+
+    const [viewingBankDetailsUserId, setViewingBankDetailsUserId] = useState<number | null>(null);
+    const [isBankDetailsModalOpen, setIsBankDetailsModalOpen] = useState(false);
 
     // User Dropdown State
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -174,28 +271,46 @@ export default function AdminPayoutsPage() {
                 const canMature = item.status === 'Unmatured' || item.status === 'Processing';
                 const isMaturing = maturingPayoutId === item.id;
 
-                if (!canMature) return <span className="text-xs text-muted-foreground">-</span>;
-
                 return (
-                    <Button
-                        onClick={() => handleMaturePayout(item.id)}
-                        disabled={isMaturing || isMaturingPayout}
-                        size="sm"
-                        variant="default"
-                        className="h-8 px-3 text-xs"
-                    >
-                        {isMaturing ? (
-                            <>
-                                <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                                Processing...
-                            </>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            onClick={() => {
+                                setViewingBankDetailsUserId(item.user_id || item.user?.id);
+                                setIsBankDetailsModalOpen(true);
+                            }}
+                            size="sm"
+                            variant="outline"
+                            className="h-8 px-2 text-xs"
+                            title="View Bank Details"
+                        >
+                            <Eye className="w-3.5 h-3.5 mr-1" />
+                            Bank
+                        </Button>
+
+                        {canMature ? (
+                            <Button
+                                onClick={() => handleMaturePayout(item.id)}
+                                disabled={isMaturing || isMaturingPayout}
+                                size="sm"
+                                variant="default"
+                                className="h-8 px-3 text-xs"
+                            >
+                                {isMaturing ? (
+                                    <>
+                                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <CheckCircle className="w-3 h-3 mr-1" />
+                                        Mature
+                                    </>
+                                )}
+                            </Button>
                         ) : (
-                            <>
-                                <CheckCircle className="w-3 h-3 mr-1" />
-                                Mature
-                            </>
+                            <span className="text-xs text-muted-foreground px-3 inline-block">-</span>
                         )}
-                    </Button>
+                    </div>
                 );
             },
         },
@@ -214,6 +329,11 @@ export default function AdminPayoutsPage() {
 
     return (
         <div className="space-y-6">
+            <BankDetailsModal
+                userId={viewingBankDetailsUserId}
+                isOpen={isBankDetailsModalOpen}
+                onClose={() => setIsBankDetailsModalOpen(false)}
+            />
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>

@@ -12,6 +12,117 @@ import { Switch } from "@/components/ui/switch";
 import { useGetUserQuery, useUpdateUserMutation } from "@/redux/apies/usersCrudApi";
 import { useGetAdminUserBankDetailsQuery, useUpdateUserBankDetailsMutation } from "@/redux/apies/adminApi";
 import type { AdminUser, BankDetail, BankDetailRequest } from "@/lib/types";
+import { toast } from "react-hot-toast";
+
+function BankDetailForm({ bankItem, refetchBank }: { bankItem: BankDetail, refetchBank: () => void }) {
+    const [updateUserBankDetails, { isLoading: isUpdatingBank }] = useUpdateUserBankDetailsMutation();
+    const bankForm = useForm<BankFormValues>({
+        resolver: zodResolver(bankSchema),
+        defaultValues: {
+            bank_name: bankItem.bank_name,
+            account_holder_name: bankItem.account_holder_name,
+            account_number: bankItem.account_number,
+            ifsc_code: bankItem.ifsc_code,
+            branch_name: bankItem.branch_name || '',
+            is_primary: Boolean(bankItem.is_primary),
+        }
+    });
+
+    useEffect(() => {
+        bankForm.reset({
+            bank_name: bankItem.bank_name,
+            account_holder_name: bankItem.account_holder_name,
+            account_number: bankItem.account_number,
+            ifsc_code: bankItem.ifsc_code,
+            branch_name: bankItem.branch_name || '',
+            is_primary: Boolean(bankItem.is_primary),
+        });
+    }, [bankItem, bankForm.reset]);
+
+    const onBankSubmit = async (data: BankFormValues) => {
+        try {
+            await updateUserBankDetails({ id: bankItem.id, data: data as BankDetailRequest }).unwrap();
+            refetchBank();
+            toast.success("Bank details updated successfully!");
+        } catch (error: any) {
+            console.error("Failed to update bank details", error);
+            toast.error("Failed to update bank details.");
+        }
+    };
+
+    return (
+        <div className="space-y-4 p-4 border border-border rounded-xl bg-muted/10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border pb-3 mb-4 gap-2">
+                <h4 className="font-semibold">{bankItem.bank_name} - {bankItem.account_number.slice(-4)}</h4>
+                <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium">Primary Account</label>
+                    <Controller
+                        control={bankForm.control}
+                        name="is_primary"
+                        render={({ field }) => (
+                            <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                            />
+                        )}
+                    />
+                </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Bank Name</label>
+                    <input
+                        {...bankForm.register("bank_name")}
+                        className="w-full bg-background border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none"
+                    />
+                    {bankForm.formState.errors.bank_name && <p className="text-red-500 text-xs">{bankForm.formState.errors.bank_name.message}</p>}
+                </div>
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Account Holder</label>
+                    <input
+                        {...bankForm.register("account_holder_name")}
+                        className="w-full bg-background border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none"
+                    />
+                    {bankForm.formState.errors.account_holder_name && <p className="text-red-500 text-xs">{bankForm.formState.errors.account_holder_name.message}</p>}
+                </div>
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Account Number</label>
+                    <input
+                        {...bankForm.register("account_number")}
+                        className="w-full bg-background border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none"
+                    />
+                    {bankForm.formState.errors.account_number && <p className="text-red-500 text-xs">{bankForm.formState.errors.account_number.message}</p>}
+                </div>
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">IFSC Code</label>
+                    <input
+                        {...bankForm.register("ifsc_code")}
+                        className="w-full bg-background border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none"
+                    />
+                    {bankForm.formState.errors.ifsc_code && <p className="text-red-500 text-xs">{bankForm.formState.errors.ifsc_code.message}</p>}
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                    <label className="text-sm font-medium">Branch Name</label>
+                    <input
+                        {...bankForm.register("branch_name")}
+                        className="w-full bg-background border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none"
+                    />
+                </div>
+            </div>
+            <div className="flex justify-end pt-2">
+                <button
+                    type="button"
+                    disabled={isUpdatingBank}
+                    onClick={bankForm.handleSubmit(onBankSubmit)}
+                    className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-sm font-medium hover:bg-primary/20 transition-all flex items-center gap-2"
+                >
+                    {isUpdatingBank ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Save Details
+                </button>
+            </div>
+        </div>
+    );
+}
 
 const userSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -47,8 +158,8 @@ function EditUserContent() {
     // Bank Details Logic
     const [isBankSectionOpen, setIsBankSectionOpen] = useState(false);
     const { data: bankData, isLoading: isFetchingBank, refetch: refetchBank } = useGetAdminUserBankDetailsQuery(id, { skip: !id });
-    const [updateUserBankDetails, { isLoading: isUpdatingBank }] = useUpdateUserBankDetailsMutation();
-    const bankDetails = bankData?.data as unknown as BankDetail | undefined;
+    const rawBankData = bankData?.data as any;
+    const bankList = (Array.isArray(rawBankData) ? rawBankData : (rawBankData ? [rawBankData] : [])) as BankDetail[];
 
     const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
 
@@ -70,10 +181,6 @@ function EditUserContent() {
         resolver: zodResolver(userSchema),
     });
 
-    const bankForm = useForm<BankFormValues>({
-        resolver: zodResolver(bankSchema),
-    });
-
     // Populate form
     useEffect(() => {
         if (userData) {
@@ -87,20 +194,6 @@ function EditUserContent() {
         }
     }, [userData, reset]);
 
-    // Populate bank form
-    useEffect(() => {
-        if (bankDetails) {
-            bankForm.reset({
-                bank_name: bankDetails.bank_name,
-                account_holder_name: bankDetails.account_holder_name,
-                account_number: bankDetails.account_number,
-                ifsc_code: bankDetails.ifsc_code,
-                branch_name: bankDetails.branch_name || '',
-                is_primary: Boolean(bankDetails.is_primary),
-            });
-        }
-    }, [bankDetails, bankForm.reset]);
-
     const onSubmit = async (data: UserFormValues) => {
         if (!id) return;
         const { referral_code, ...updateData } = data;
@@ -109,17 +202,6 @@ function EditUserContent() {
             router.push("/admin/dashboard/users");
         } catch (error: any) {
             console.error("Failed to update user", error);
-        }
-    };
-
-    const onBankSubmit = async (data: BankFormValues) => {
-        if (!id || !bankDetails) return;
-        try {
-            await updateUserBankDetails({ id: bankDetails.id, data: data as BankDetailRequest }).unwrap();
-            refetchBank();
-            // Optional: Show toast success here
-        } catch (error: any) {
-            console.error("Failed to update bank details", error);
         }
     };
 
@@ -231,62 +313,13 @@ function EditUserContent() {
                             <div className="mt-4 p-4 border border-border rounded-xl animate-in fade-in slide-in-from-top-2">
                                 {isFetchingBank ? (
                                     <div className="flex justify-center py-4"><Loader2 className="animate-spin" /></div>
-                                ) : !bankDetails ? (
+                                ) : bankList.length === 0 ? (
                                     <div className="text-center py-4 text-muted-foreground">No bank details found for this user.</div>
                                 ) : (
-                                    <div className="space-y-4">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-medium">Bank Name</label>
-                                                <input
-                                                    {...bankForm.register("bank_name")}
-                                                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none"
-                                                />
-                                                {bankForm.formState.errors.bank_name && <p className="text-red-500 text-xs">{bankForm.formState.errors.bank_name.message}</p>}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-medium">Account Holder</label>
-                                                <input
-                                                    {...bankForm.register("account_holder_name")}
-                                                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none"
-                                                />
-                                                {bankForm.formState.errors.account_holder_name && <p className="text-red-500 text-xs">{bankForm.formState.errors.account_holder_name.message}</p>}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-medium">Account Number</label>
-                                                <input
-                                                    {...bankForm.register("account_number")}
-                                                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none"
-                                                />
-                                                {bankForm.formState.errors.account_number && <p className="text-red-500 text-xs">{bankForm.formState.errors.account_number.message}</p>}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-medium">IFSC Code</label>
-                                                <input
-                                                    {...bankForm.register("ifsc_code")}
-                                                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none"
-                                                />
-                                                {bankForm.formState.errors.ifsc_code && <p className="text-red-500 text-xs">{bankForm.formState.errors.ifsc_code.message}</p>}
-                                            </div>
-                                            <div className="space-y-2 md:col-span-2">
-                                                <label className="text-sm font-medium">Branch Name</label>
-                                                <input
-                                                    {...bankForm.register("branch_name")}
-                                                    className="w-full bg-muted/50 border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 outline-none"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-end pt-2">
-                                            <button
-                                                type="button"
-                                                disabled={isUpdatingBank}
-                                                onClick={bankForm.handleSubmit(onBankSubmit)}
-                                                className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-sm font-medium hover:bg-primary/20 transition-all flex items-center gap-2"
-                                            >
-                                                {isUpdatingBank ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                                Save Bank Details
-                                            </button>
-                                        </div>
+                                    <div className="space-y-6">
+                                        {bankList.map((bankItem) => (
+                                            <BankDetailForm key={bankItem.id} bankItem={bankItem} refetchBank={refetchBank} />
+                                        ))}
                                     </div>
                                 )}
                             </div>
