@@ -20,7 +20,7 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
     onRefresh,
     isRefreshing,
     className,
-    label,
+    // label,
     tooltip = "Refresh Data"
 }) => {
     return (
@@ -28,7 +28,8 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
             <TooltipTrigger asChild>
                 <Button
                     variant="outline"
-                    size={label ? "default" : "icon"}
+                    size='icon'
+                    // size={label ? "default" : "icon"}
                     onClick={onRefresh}
                     disabled={isRefreshing}
                     className={cn("transition-all duration-300 hover:bg-muted group cursor-pointer", className)}
@@ -40,7 +41,7 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
                             isRefreshing ? "animate-spin text-primary" : ""
                         )}
                     />
-                    {label && <span className="ml-2">{label}</span>}
+                    {/* {label && <span className="ml-2">{label}</span>} */}
                 </Button>
             </TooltipTrigger>
             <TooltipContent>

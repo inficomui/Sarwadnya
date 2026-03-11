@@ -6,9 +6,10 @@ import { useGetUsersQuery } from "@/redux/apies/usersCrudApi";
 import { useMaturePayoutMutation } from "@/redux/apies/payoutApi";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import FormattedDate from "@/components/common/FormattedDate";
-import { Calendar, Search, Filter, CheckCircle, Loader2, ChevronDown, Check, X, Eye, Building2, CreditCard, Copy } from "lucide-react";
+import { Calendar, Search, Filter, CheckCircle, Loader2, ChevronDown, Check, X, Eye, Building2, CreditCard, Copy, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import * as XLSX from "xlsx";
 
 const BankDetailsModal = ({ userId, isOpen, onClose }: { userId: number | null, isOpen: boolean, onClose: () => void }) => {
     const { data: bankData, isLoading } = useGetAdminUserBankDetailsQuery(userId ?? 0, {
@@ -26,7 +27,7 @@ const BankDetailsModal = ({ userId, isOpen, onClose }: { userId: number | null, 
     const banks = Array.isArray(bankData?.data) ? bankData.data : (bankData?.data ? [bankData.data] : []);
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
             <div className="bg-card w-full max-w-md rounded-xl p-6 shadow-xl border border-border flex flex-col max-h-[90vh]">
                 <div className="flex justify-between items-center mb-4 pb-3 border-b border-border">
                     <h2 className="text-xl font-bold flex items-center gap-2">
@@ -183,6 +184,52 @@ export default function AdminPayoutsPage() {
         } finally {
             setMaturingPayoutId(null);
         }
+    };
+    
+    const handleExportExcel = () => {
+        if (filteredPayouts.length === 0) {
+            toast.error("No data available to export");
+            return;
+        }
+
+        const exportData = filteredPayouts.map((item: any, index: number) => ({
+            "Sr. No.": index + 1,
+            "Payout ID": item.id,
+            "User Name": item.user?.name || "N/A",
+            "User Email": item.user?.email || "N/A",
+            "Amount (Gross)": Number(item.amount),
+            "TDS": Number(item.tds || 0),
+            "Admin Charges": Number(item.admin_charges || 0),
+            "Net Amount": Number(item.net_amount || (Number(item.amount) - Number(item.tds || 0) - Number(item.admin_charges || 0))),
+            "Type": item.type,
+            "Status": item.status,
+            "Payout Date": item.payout_date ? new Date(item.payout_date).toLocaleDateString('en-IN') : "N/A",
+            "Created At": new Date(item.created_at).toLocaleString('en-IN')
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Payouts");
+
+        // Set column widths
+        const wscols = [
+            { wch: 8 },  // Sr. No.
+            { wch: 10 }, // Payout ID
+            { wch: 20 }, // User Name
+            { wch: 25 }, // User Email
+            { wch: 15 }, // Amount
+            { wch: 10 }, // TDS
+            { wch: 15 }, // Admin Charges
+            { wch: 15 }, // Net Amount
+            { wch: 10 }, // Type
+            { wch: 12 }, // Status
+            { wch: 12 }, // Payout Date
+            { wch: 20 }  // Created At
+        ];
+        worksheet["!cols"] = wscols;
+
+        XLSX.writeFile(workbook, `payout_reports_${startDate}_to_${endDate}.xlsx`);
+        toast.success("Excel matching current filters downloaded!");
     };
 
 
@@ -341,6 +388,17 @@ export default function AdminPayoutsPage() {
                         Payout Reports
                     </h1>
                     <p className="text-muted-foreground text-sm mt-1">Generate payout reports by date range</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <Button
+                        onClick={handleExportExcel}
+                        variant="outline"
+                        className="bg-green-600 hover:bg-green-700 text-white border-none shadow-sm shadow-green-500/20"
+                        title="Export Entire Filtered List to Excel"
+                    >
+                        <Download className="w-4 h-4 mr-2" />
+                        Export Excel
+                    </Button>
                 </div>
             </div>
 

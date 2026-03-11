@@ -249,8 +249,8 @@ export interface GetPayoutsParams {
 }
 
 export interface GetPayoutsByRangeParams {
-    start_date: string;
-    end_date: string;
+    start_date?: string;
+    end_date?: string;
     user_id?: number; // Optional for admin to filter by user
 }
 

@@ -11,6 +11,7 @@ import {
     Layers,
     MessageSquareQuote,
     TrendingDown,
+    TrendingUp,
     Wallet,
     Bell
 } from "lucide-react";

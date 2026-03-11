@@ -16,7 +16,7 @@ export const userSidebarItems = [
     { label: 'Financial Summary', href: '/dashboard/wallet', icon: Wallet },
     { label: 'Investments', href: '/dashboard/investments', icon: TrendingUp },
     { label: 'New Investment', href: '/dashboard/transfers', icon: PieChart },
-    { label: 'Payout Reports', href: '/dashboard/payouts', icon: FileText },
+    { label: 'Payout Details', href: '/dashboard/payout-details', icon: FileText },
     { label: 'Profile', href: '/dashboard/profile', icon: Settings },
     {
         label: 'My Network',

@@ -7,14 +7,14 @@ import type { RootState } from "@/redux/store";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const router = useRouter();
-    // Grab auth state synchronously so client-side navigation is instant
     const isAuthenticatedInRedux = useSelector((state: RootState) => state.auth.isAuthenticated);
 
+    const [mounted, setMounted] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(isAuthenticatedInRedux);
     const [isLoading, setIsLoading] = useState(!isAuthenticatedInRedux);
 
     useEffect(() => {
-        // Only run localStorage fallback check if Redux hasn't hydrated or authenticated yet
+        setMounted(true);
         if (!isAuthenticatedInRedux) {
             const token = localStorage.getItem("token");
             if (!token) {
@@ -29,7 +29,11 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         }
     }, [router, isAuthenticatedInRedux]);
 
-    // Fast path: completely skip the loading spinner unmount if already authenticated
+    // Don't render anything on the server to avoid hydration mismatch
+    if (!mounted) {
+        return null;
+    }
+
     if (isLoading && !isAuthenticatedInRedux) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-background">
@@ -39,7 +43,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     }
 
     if (!isAuthenticated) {
-        return null; // Don't render anything while redirecting
+        return null; 
     }
 
     return <>{children}</>;
