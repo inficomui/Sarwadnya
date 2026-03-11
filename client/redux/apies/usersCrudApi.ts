@@ -11,6 +11,7 @@ export const usersCrudApi = createApi({
     reducerPath: "usersCrudApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
     tagTypes: ["Users"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         getUsers: builder.query<PaginatedResponse<User>, GetUsersParams>({
             query: (params) => ({

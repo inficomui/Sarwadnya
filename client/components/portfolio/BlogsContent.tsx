@@ -4,17 +4,11 @@ import { useGetBlogsQuery } from "@/redux/apies/blogApi";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import FormattedDate from "@/components/common/FormattedDate";
 
 export default function BlogsContent() {
     const [page, setPage] = useState(1);
     const { data: blogsData, isLoading, isError } = useGetBlogsQuery({ page });
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        });
-    };
 
     const stripHtml = (html: string) => {
         const allowed = html.replace(/<[^>]*>?/gm, '');
@@ -79,7 +73,7 @@ export default function BlogsContent() {
                                 <div className="flex-1">
                                     <p className="text-xs font-medium text-primary mb-2 flex items-center gap-2">
                                         <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                                        {formatDate(blog.created_at)}
+                                        <FormattedDate date={blog.created_at} options={{ year: 'numeric', month: 'long', day: 'numeric' }} />
                                     </p>
                                     <Link href={`/blogs/view?slug=${blog.slug}`} className="block">
                                         <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">

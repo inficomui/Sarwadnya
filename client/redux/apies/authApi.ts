@@ -19,7 +19,9 @@ import type {
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
-  tagTypes: ["auth"],
+  
+    tagTypes: ["auth"],
+    keepUnusedDataFor: 3600,
   endpoints: (builder) => ({
     // LOGIN
     loginUser: builder.mutation<UserLoginResponse["data"], LoginRequest>({

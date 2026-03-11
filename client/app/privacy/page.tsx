@@ -142,3 +142,6 @@ export default function PrivacyPolicy() {
         </main>
     );
 }
+
+
+export const revalidate = 3600;

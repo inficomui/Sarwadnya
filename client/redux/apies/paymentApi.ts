@@ -12,7 +12,9 @@ import type {
 export const paymentApi = createApi({
     reducerPath: "paymentApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
+    
     tagTypes: ["PaymentDetails", "BankDetails"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         // Public: Get Payment Details (Admin set)
         getPaymentDetails: builder.query<GetBankDetailsResponse, void>({

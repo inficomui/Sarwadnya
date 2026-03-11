@@ -10,3 +10,6 @@ export const metadata: Metadata = {
 export default function BlogsPage() {
     return <BlogsContent />;
 }
+
+
+export const revalidate = 3600;

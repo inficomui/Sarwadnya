@@ -66,7 +66,7 @@ const Contact = () => {
                         >
                             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Contact Us</h2>
                             <p className="text-muted-foreground mb-10 leading-relaxed">
-                                Want to work with us or need more details about consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.
+                                Want to work with us or need more details about our services? Fill out the form below and our team will get back to you shortly.
                             </p>
 
                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

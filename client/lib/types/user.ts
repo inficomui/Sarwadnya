@@ -70,6 +70,8 @@ export interface UserDashboardResponse {
             phone_number: string;
             kyc_status?: string;
             is_payout_restricted?: boolean;
+            rank?: string;
+            referral_code?: string;
         };
         referral: {
             code: string;
@@ -80,11 +82,13 @@ export interface UserDashboardResponse {
             rank: string;
             joined_at: string;
             is_wallet_active: boolean;
+            wallet_balance: string;
         };
         financials: {
             available_balance: number;
             total_deposited: number;
             total_withdrawn: number | string;
+            active_investment: number;
             total_earnings: number;
             earnings_breakdown: {
                 roi_income: number;
@@ -98,6 +102,11 @@ export interface UserDashboardResponse {
         earning_limit?: {
             reached: boolean;
             message: string;
+            percentage?: number;
+        };
+        stats?: {
+            total_team: number;
+            direct_referrals: number;
         };
     };
 }

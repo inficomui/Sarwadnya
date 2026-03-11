@@ -83,13 +83,13 @@ const News = () => {
                                 />
                             </div>
                             <span className="text-muted-foreground text-xs font-semibold uppercase mb-2">{item.date}</span>
-                            <Link href="#" className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-4 line-clamp-2">
+                            <Link href="/blogs" className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-4 line-clamp-2">
                                 {item.title}
                             </Link>
                             <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
                                 {item.excerpt}
                             </p>
-                            <Link href="#" className="text-primary hover:text-primary/80 text-sm font-semibold uppercase tracking-wide inline-block mt-auto">
+                            <Link href="/blogs" className="text-primary hover:text-primary/80 text-sm font-bold uppercase tracking-widest inline-block mt-auto">
                                 Read More
                             </Link>
                         </motion.div>

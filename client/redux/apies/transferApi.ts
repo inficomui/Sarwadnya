@@ -10,6 +10,7 @@ export const transferApi = createApi({
     reducerPath: "transferApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
     tagTypes: ["UserTransfers"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         getMyTransfers: builder.query<GetUserTransfersResponse, void>({
             query: () => ({

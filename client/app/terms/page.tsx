@@ -128,3 +128,6 @@ export default function TermsAndConditions() {
         </main>
     );
 }
+
+
+export const revalidate = 3600;

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Sidebar from './Sidebar';
 import { Menu, Bell, Search, AlertTriangle, Lock } from 'lucide-react';
 import { ModeToggle } from '@/components/ui/ModeToggle';
@@ -9,6 +9,7 @@ import { RootState } from '@/redux/store';
 import { toggleSidebar } from '@/redux/slices/uiSlice';
 import { usePathname, useRouter } from 'next/navigation';
 import { useGetUserDashboardQuery } from '@/redux/apies/dashboardApi';
+import { cn } from '@/lib/utils';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -22,39 +23,43 @@ interface DashboardLayoutProps {
     isLoggingOut?: boolean;
 }
 
-const DashboardLayout = ({ children, sidebarItems, user, onLogout, isLoggingOut = false }: DashboardLayoutProps) => {
+const DashboardLayout = React.memo(({ children, sidebarItems, user, onLogout, isLoggingOut = false }: DashboardLayoutProps) => {
     const dispatch = useDispatch();
     const pathname = usePathname();
     const router = useRouter();
     const { isSidebarCollapsed } = useSelector((state: RootState) => state.ui);
-    const { data: dashboardData } = useGetUserDashboardQuery();
+    const { data: dashboardData } = useGetUserDashboardQuery(undefined, {
+        refetchOnMountOrArgChange: false,
+    });
 
     const earningLimit = dashboardData?.data?.earning_limit;
     const isLimitReached = earningLimit?.reached;
 
     // Allowed paths when limit is reached
-    // We compare strict starts for sub-routes
-    const allowedRootPaths = ['/dashboard/profile', '/dashboard/investments'];
+    const allowedRootPaths = useMemo(() => ['/dashboard/profile', '/dashboard/investments'], []);
     const isDashboardRoot = pathname === '/dashboard';
 
     // Check if current path is allowed
-    const isAllowedPath = isDashboardRoot || allowedRootPaths.some(path => pathname.startsWith(path));
+    const isAllowedPath = useMemo(() =>
+        isDashboardRoot || allowedRootPaths.some(path => pathname.startsWith(path)),
+        [isDashboardRoot, pathname, allowedRootPaths]);
 
     // Redirect if earning limit is reached and path is not allowed
     useEffect(() => {
         if (isLimitReached && !isAllowedPath) {
             router.push('/dashboard');
         }
-    }, [isLimitReached, isAllowedPath, pathname, router]);
-
+    }, [isLimitReached, isAllowedPath, router]);
 
     // Filter sidebar items based on limit only
-    const filteredSidebarItems = isLimitReached
-        ? sidebarItems.filter(item =>
-            item.href === '/dashboard' ||
-            allowedRootPaths.some(allowed => item.href.startsWith(allowed))
-        )
-        : sidebarItems;
+    const filteredSidebarItems = useMemo(() =>
+        isLimitReached
+            ? sidebarItems.filter(item =>
+                item.href === '/dashboard' ||
+                allowedRootPaths.some(allowed => item.href.startsWith(allowed))
+            )
+            : sidebarItems,
+        [isLimitReached, sidebarItems, allowedRootPaths]);
 
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
@@ -62,40 +67,50 @@ const DashboardLayout = ({ children, sidebarItems, user, onLogout, isLoggingOut 
 
     useEffect(() => {
         setMounted(true);
-        const handleScroll = () => setScrolled(window.scrollY > 20);
-        window.addEventListener('scroll', handleScroll);
+        const handleScroll = () => {
+            if (window.scrollY > 20) {
+                setScrolled(true);
+            } else {
+                setScrolled(false);
+            }
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    if (!mounted) return null;
+    const closeMobileSidebar = useCallback(() => setIsMobileSidebarOpen(false), []);
+    const openMobileSidebar = useCallback(() => setIsMobileSidebarOpen(true), []);
+    const handleToggleSidebar = useCallback(() => dispatch(toggleSidebar()), [dispatch]);
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex overflow-hidden">
+            {!mounted ? (
+                <div className="fixed inset-0 flex items-center justify-center bg-slate-50 dark:bg-slate-950 z-[100]">
+                    <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+                </div>
+            ) : null}
             <Sidebar
                 isCollapsed={isSidebarCollapsed}
-                toggleCollapse={() => dispatch(toggleSidebar())}
+                toggleCollapse={handleToggleSidebar}
                 items={filteredSidebarItems}
                 user={user}
                 onLogout={onLogout}
                 isMobileOpen={isMobileSidebarOpen}
-                closeMobileSidebar={() => setIsMobileSidebarOpen(false)}
+                closeMobileSidebar={closeMobileSidebar}
                 isLoggingOut={isLoggingOut}
-                distributorData={{
-                    profile: dashboardData?.data?.profile,
-                    referral: dashboardData?.data?.referral,
-                    account: dashboardData?.data?.account
-                }}
             />
 
             <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
                 {/* Top Navigation Header */}
-                <header className={`h-[80px] flex items-center justify-between px-6 shrink-0 z-40 transition-all duration-300 ${scrolled
-                    ? "bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm"
-                    : "bg-transparent"
-                    }`}>
+                <header className={cn(
+                    "h-[80px] flex items-center justify-between px-6 shrink-0 z-40 transition-shadow duration-300",
+                    scrolled
+                        ? "bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm"
+                        : "bg-transparent"
+                )}>
                     <div className="flex items-center gap-4">
                         <button
-                            onClick={() => setIsMobileSidebarOpen(true)}
+                            onClick={openMobileSidebar}
                             className="md:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300 transition-colors"
                         >
                             <Menu size={24} />
@@ -193,6 +208,8 @@ const DashboardLayout = ({ children, sidebarItems, user, onLogout, isLoggingOut 
             </div>
         </div>
     );
-};
+});
+
+DashboardLayout.displayName = "DashboardLayout";
 
 export default DashboardLayout;

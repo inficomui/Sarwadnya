@@ -17,7 +17,7 @@ import {
     ShieldCheck
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { DashboardStatCard } from "@/components/dashboard/DashboardStatCard";
+import DashboardStatCard from "@/components/dashboard/DashboardStatCard";
 import FormattedDate from "@/components/common/FormattedDate";
 import Loader from "@/components/common/Loader";
 import RefreshButton from "@/components/common/RefreshButton";
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
                         value={stat.value}
                         icon={stat.icon}
                         color={stat.color}
-                        delay={i * 0.1}
+                    // delay={i * 0.1}
                     />
                 ))}
             </div>

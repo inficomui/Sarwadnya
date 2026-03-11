@@ -5,7 +5,9 @@ import type { ReferralDashboardSummaryResponse, ReferralEarningsHistoryResponse,
 export const referralApi = createApi({
     reducerPath: "referralApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
+    
     tagTypes: ["Referrals"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         // User: Get Referral Dashboard Summary
         getReferralDashboardSummary: builder.query<ReferralDashboardSummaryResponse, void>({

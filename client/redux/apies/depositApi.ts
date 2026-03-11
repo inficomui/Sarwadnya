@@ -14,6 +14,7 @@ export const depositApi = createApi({
     reducerPath: "depositApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
     tagTypes: ["UserDeposits", "AdminDeposits"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         // User: Create Deposit Request
         createDeposit: builder.mutation<CreateDepositResponse, FormData>({

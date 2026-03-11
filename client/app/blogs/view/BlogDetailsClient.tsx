@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Calendar, FileText, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import FormattedDate from "@/components/common/FormattedDate";
 
 function BlogDetailsContent() {
     const searchParams = useSearchParams();
@@ -42,7 +43,6 @@ function BlogDetailsContent() {
 
     return (
         <div className="pb-16 mobile-padding-fix">
-            {/* Helper class for mobile padding if needed, but layout handles pt-24 */}
 
             {/* Hero Section */}
             <div className="relative h-[40vh] min-h-[300px] w-full bg-zinc-900 dark:bg-zinc-950 overflow-hidden rounded-xl sm:rounded-2xl mx-auto max-w-[95%] sm:max-w-7xl mt-4 sm:mt-0 shadow-2xl">
@@ -56,7 +56,7 @@ function BlogDetailsContent() {
                         />
                     </>
                 ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-purple-800/30 z-0" />
+                    <div className="absolute inset-0 bg-linear-to-br from-primary/30 to-purple-800/30 z-0" />
                 )}
 
                 <div className="absolute inset-0 z-20 flex flex-col justify-end pb-8 sm:pb-12 px-6 sm:px-12 max-w-4xl mx-auto w-full">
@@ -72,7 +72,7 @@ function BlogDetailsContent() {
                         <div className="flex items-center mr-4">
                             <Calendar size={16} className="mr-2 opacity-80" />
                             <time dateTime={blog.created_at}>
-                                {new Date(blog.created_at).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}
+                                <FormattedDate date={blog.created_at} options={{ year: 'numeric', month: 'long', day: 'numeric' }} />
                             </time>
                         </div>
                         <span className="hidden sm:inline mx-3 opacity-60">•</span>

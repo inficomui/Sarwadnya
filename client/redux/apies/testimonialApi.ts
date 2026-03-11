@@ -5,7 +5,9 @@ import { Testimonial, TestimonialResponse, TestimonialsResponse } from "../../li
 export const testimonialApi = createApi({
     reducerPath: "testimonialApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
+    
     tagTypes: ["Testimonials"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         getTestimonials: builder.query<TestimonialsResponse, void>({
             query: () => ({

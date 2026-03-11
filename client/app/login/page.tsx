@@ -29,3 +29,6 @@ export default function LoginPage() {
         </main>
     );
 }
+
+
+export const revalidate = 3600;

@@ -31,3 +31,6 @@ export default function SignUpPage() {
         </main>
     );
 }
+
+
+export const revalidate = 3600;

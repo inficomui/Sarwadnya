@@ -18,30 +18,23 @@ export default function TransactionsPage() {
     const { user, logout, isLoggingOut } = useAuth();
 
     return (
-        <ProtectedRoute>
-            <DashboardLayout
-                sidebarItems={userSidebarItems}
-                user={user ? { ...user, role: 'user' } : undefined}
-                onLogout={logout}
-                isLoggingOut={isLoggingOut}
-            >
-                <div className="space-y-6">
-                    <div>
-                        <h1 className="text-3xl font-bold text-foreground">Transaction History</h1>
-                        <p className="text-muted-foreground mt-1">View your recent deposits, withdrawals, and earnings.</p>
-                    </div>
-
-                    <div className="bg-card rounded-2xl border border-border p-8 text-center py-20">
-                        <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4 text-muted-foreground">
-                            <CreditCard size={40} />
-                        </div>
-                        <h3 className="text-xl font-semibold mb-2">Transactions Module Coming Soon</h3>
-                        <p className="text-muted-foreground max-w-sm mx-auto">
-                            We are currently working on this feature. Check back later for updates.
-                        </p>
-                    </div>
+        <>
+            <div className="space-y-6">
+                <div>
+                    <h1 className="text-3xl font-bold text-foreground">Transaction History</h1>
+                    <p className="text-muted-foreground mt-1">View your recent deposits, withdrawals, and earnings.</p>
                 </div>
-            </DashboardLayout>
-        </ProtectedRoute>
+
+                <div className="bg-card rounded-2xl border border-border p-8 text-center py-20">
+                    <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4 text-muted-foreground">
+                        <CreditCard size={40} />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">Transactions Module Coming Soon</h3>
+                    <p className="text-muted-foreground max-w-sm mx-auto">
+                        We are currently working on this feature. Check back later for updates.
+                    </p>
+                </div>
+            </div>
+        </>
     );
 }

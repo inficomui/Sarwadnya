@@ -21,7 +21,9 @@ import type {
 export const adminApi = createApi({
     reducerPath: "adminApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
+    
     tagTypes: ["admin", "transfers"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         // Admin Login Endpoint
         adminLogin: builder.mutation<AdminLoginResponse["data"], AdminLoginRequest>({

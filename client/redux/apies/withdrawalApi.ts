@@ -12,6 +12,7 @@ export const withdrawalApi = createApi({
     reducerPath: "withdrawalApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
     tagTypes: ["Withdrawals"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         // User: List Withdrawals
         getMineWithdrawals: builder.query<GetWithdrawalsResponse, GetWithdrawalsParams | void>({

@@ -8,7 +8,9 @@ import type {
 export const investmentApi = createApi({
     reducerPath: "investmentApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
+    
     tagTypes: ["Investments", "InvestmentSchedule"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         // User: Get All Investments
         getMyInvestments: builder.query<GetInvestmentsResponse, void>({

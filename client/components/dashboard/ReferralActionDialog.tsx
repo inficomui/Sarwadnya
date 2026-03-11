@@ -14,6 +14,7 @@ import { Loader2, AlertCircle, Wallet, Zap, Minus, Plus, CheckCircle, Search } f
 import { toast } from 'react-hot-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import FormattedDate from "@/components/common/FormattedDate";
 
 interface ReferralActionDialogProps {
     isOpen: boolean;
@@ -229,7 +230,7 @@ export default function ReferralActionDialog({ isOpen, onClose, referral, onSucc
                                                             <div className="text-xs text-muted-foreground flex items-center gap-2">
                                                                 <span>ID: #{inv.id}</span>
                                                                 <span>•</span>
-                                                                <span>{new Date(inv.created_at).toLocaleDateString()}</span>
+                                                                <FormattedDate date={inv.created_at} options={{ year: 'numeric', month: '2-digit', day: '2-digit' }} />
                                                             </div>
                                                         </div>
                                                         {selectedInvestmentId === inv.id ? (

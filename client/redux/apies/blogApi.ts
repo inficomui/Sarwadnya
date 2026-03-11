@@ -5,7 +5,9 @@ import { Blog, BlogResponse, PaginatedResponse } from "../../lib/types";
 export const blogApi = createApi({
     reducerPath: "blogApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
+    
     tagTypes: ["Blogs"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         getBlogs: builder.query<PaginatedResponse<Blog>, { page?: number }>({
             query: ({ page = 1 }) => `/blogs?page=${page}`,

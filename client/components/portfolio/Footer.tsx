@@ -7,6 +7,12 @@ import LOGO from '@/public/sarwadnya-nav-logo.png';
 import { motion } from 'framer-motion';
 
 const Footer = () => {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <footer className="bg-background pt-20 border-t border-border">
       <motion.div
@@ -38,11 +44,11 @@ const Footer = () => {
           <div>
             <h4 className="text-foreground font-bold uppercase mb-6 text-sm">Our Services</h4>
             <ul className="space-y-4 text-sm text-muted-foreground">
-              <li><Link href="#services" className="hover:text-primary transition-colors">Financial Advisory</Link></li>
-              <li><Link href="#services" className="hover:text-primary transition-colors">Business Audit</Link></li>
-              <li><Link href="#services" className="hover:text-primary transition-colors">Consultancy</Link></li>
-              <li><Link href="#services" className="hover:text-primary transition-colors">Risk Assurance</Link></li>
-              <li><Link href="#services" className="hover:text-primary transition-colors">Mutual Funds</Link></li>
+              <li><Link href="/#services" className="hover:text-primary transition-colors">Financial Advisory</Link></li>
+              <li><Link href="/#services" className="hover:text-primary transition-colors">Business Audit</Link></li>
+              <li><Link href="/#services" className="hover:text-primary transition-colors">Consultancy</Link></li>
+              <li><Link href="/#services" className="hover:text-primary transition-colors">Risk Assurance</Link></li>
+              <li><Link href="/#services" className="hover:text-primary transition-colors">Mutual Funds</Link></li>
             </ul>
           </div>
 
@@ -51,10 +57,10 @@ const Footer = () => {
             <h4 className="text-foreground font-bold uppercase mb-6 text-sm">Quick Links</h4>
             <ul className="space-y-4 text-sm text-muted-foreground">
               <li><Link href="/" className="hover:text-primary transition-colors">Home</Link></li>
-              <li><Link href="#about" className="hover:text-primary transition-colors">About Us</Link></li>
-              <li><Link href="#testimonial" className="hover:text-primary transition-colors">Testimonial</Link></li>
-              <li><Link href="#news" className="hover:text-primary transition-colors">Expert</Link></li>
-              <li><Link href="#contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
+              <li><Link href="/#about" className="hover:text-primary transition-colors">About Us</Link></li>
+              <li><Link href="/#testimonials" className="hover:text-primary transition-colors">Testimonials</Link></li>
+              <li><Link href="/blogs" className="hover:text-primary transition-colors">Blogs</Link></li>
+              <li><Link href="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
             </ul>
           </div>
 
@@ -80,7 +86,7 @@ const Footer = () => {
       {/* Copyright Bar */}
       <div className="border-t border-border py-6">
         <div className="container mx-auto px-4 md:px-10 flex flex-col md:flex-row justify-between items-center text-xs text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Shree Sarwadnya All in one Solutions. All Rights Reserved.</p>
+          <p>&copy; {mounted ? new Date().getFullYear() : '...'} Shree Sarwadnya All in one Solutions. All Rights Reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <Link href="/terms" className="hover:text-primary transition-colors">Terms & Conditions</Link>
             <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>

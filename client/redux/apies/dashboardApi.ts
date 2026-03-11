@@ -6,6 +6,7 @@ export const dashboardApi = createApi({
     reducerPath: "dashboardApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
     tagTypes: ["Dashboard"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         getUserDashboard: builder.query<UserDashboardResponse, void>({
             query: () => ({

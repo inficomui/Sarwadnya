@@ -5,7 +5,9 @@ import type { TreeSummaryResponse, TreeUsersResponse, GetTreeUsersParams, TreeIn
 export const treeApi = createApi({
     reducerPath: "treeApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
+    
     tagTypes: ["Tree"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         getTreeSummary: builder.query<TreeSummaryResponse, void>({
             query: () => ({

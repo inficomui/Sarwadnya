@@ -17,3 +17,6 @@ export default function BlogsLayout({
         </div>
     );
 }
+
+
+export const revalidate = 3600;

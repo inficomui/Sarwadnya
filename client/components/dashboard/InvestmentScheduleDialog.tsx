@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import FormattedDate from '@/components/common/FormattedDate';
 
 interface InvestmentScheduleDialogProps {
     investmentId: number | null;
@@ -204,9 +205,10 @@ export default function InvestmentScheduleDialog({
                                                         </div>
                                                         <div className="flex items-center text-xs text-muted-foreground gap-1">
                                                             <Calendar size={12} />
-                                                            {new Date(installment.payout_date).toLocaleDateString(undefined, {
-                                                                year: 'numeric', month: 'long', day: 'numeric'
-                                                            })}
+                                                            <FormattedDate
+                                                                date={installment.payout_date}
+                                                                options={{ year: 'numeric', month: 'long', day: 'numeric' }}
+                                                            />
                                                         </div>
                                                     </div>
                                                     <div className="mt-2 sm:mt-0 flex items-center gap-4">

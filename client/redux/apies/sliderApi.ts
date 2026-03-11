@@ -19,7 +19,9 @@ export interface GetSlidersResponse {
 export const sliderApi = createApi({
     reducerPath: "sliderApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
+    
     tagTypes: ["Sliders"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         getSliders: builder.query<Slider[], void>({
             query: () => "/sliders",

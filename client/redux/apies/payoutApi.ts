@@ -6,6 +6,7 @@ export const payoutApi = createApi({
     reducerPath: "payoutApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
     tagTypes: ["Payouts"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         // User: Get Earnings Summary & History
         getMyPayouts: builder.query<GetPayoutsResponse, GetPayoutsParams | void>({

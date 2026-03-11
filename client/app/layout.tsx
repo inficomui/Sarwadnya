@@ -4,8 +4,9 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import { Toaster } from "react-hot-toast";
-import NextTopLoader from 'nextjs-toploader';
 import { TooltipProvider } from "@/components/ui/tooltip";
+
+import ProgressBarProvider from "@/components/providers/ProgressBarProvider";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-heading" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
@@ -54,11 +55,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${montserrat.variable} ${inter.variable} antialiased`}>
-        <NextTopLoader color="#C5A059" />
         <ReduxProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
             <TooltipProvider>
-              {children}
+              <ProgressBarProvider>
+                {children}
+              </ProgressBarProvider>
             </TooltipProvider>
             <Toaster position="top-right" toastOptions={{ duration: 4000 }} containerStyle={{ zIndex: 99999 }} />
           </ThemeProvider>
@@ -67,3 +69,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+export const revalidate = 3600;

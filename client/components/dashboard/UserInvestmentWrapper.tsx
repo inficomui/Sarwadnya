@@ -14,15 +14,8 @@ export default function UserInvestmentWrapper({ investmentId }: UserInvestmentWr
     const { user, logout, isLoggingOut } = useAuth();
 
     return (
-        <ProtectedRoute>
-            <DashboardLayout
-                sidebarItems={userSidebarItems}
-                user={user ? { ...user, role: 'user' } : undefined}
-                onLogout={logout}
-                isLoggingOut={isLoggingOut}
-            >
+        <>
                 <InvestmentDetailsView investmentId={investmentId} />
-            </DashboardLayout>
-        </ProtectedRoute>
+            </>
     );
 }

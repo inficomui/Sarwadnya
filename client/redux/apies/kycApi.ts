@@ -17,6 +17,7 @@ export const kycApi = createApi({
     reducerPath: "kycApi",
     baseQuery: createBaseQuery(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api`),
     tagTypes: ["KycFields", "KycStatus", "KycSubmissions"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         getAdminKycFields: builder.query<KycField[], void>({
             query: () => ({

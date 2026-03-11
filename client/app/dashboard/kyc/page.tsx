@@ -484,43 +484,36 @@ export default function KycPage() {
     };
 
     return (
-        <ProtectedRoute>
-            <DashboardLayout
-                sidebarItems={userSidebarItems}
-                user={user ? { ...user, role: 'user' } : undefined}
-                onLogout={logout}
-                isLoggingOut={isLoggingOut}
-            >
-                <div className="min-h-screen bg-transparent">
-                    {/* Container wrapper moved inside renderContent or wrapped here if needed globally */}
-                    <div className="container max-w-6xl mx-auto px-4 py-8 sm:px-6">
-                        {renderContent()}
-                    </div>
+        <>
+            <div className="min-h-screen bg-transparent">
+                {/* Container wrapper moved inside renderContent or wrapped here if needed globally */}
+                <div className="container max-w-6xl mx-auto px-4 py-8 sm:px-6">
+                    {renderContent()}
                 </div>
+            </div>
 
-                <Dialog open={!!bannedMessage} onOpenChange={() => { /* Prevent closing by clicking outside */ }}>
-                    <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
-                        <DialogHeader>
-                            <DialogTitle className="text-red-600 flex items-center gap-2">
-                                <AlertCircle className="h-6 w-6" />
-                                Account Banned
-                            </DialogTitle>
-                            <DialogDescription className="pt-4 text-base text-foreground font-medium">
-                                {bannedMessage}
-                            </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter className="sm:justify-center">
-                            <Button
-                                variant="destructive"
-                                onClick={() => logout()}
-                                className="w-full sm:w-auto"
-                            >
-                                Acknowledge & Logout
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            </DashboardLayout>
-        </ProtectedRoute>
+            <Dialog open={!!bannedMessage} onOpenChange={() => { /* Prevent closing by clicking outside */ }}>
+                <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
+                    <DialogHeader>
+                        <DialogTitle className="text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-6 w-6" />
+                            Account Banned
+                        </DialogTitle>
+                        <DialogDescription className="pt-4 text-base text-foreground font-medium">
+                            {bannedMessage}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="sm:justify-center">
+                        <Button
+                            variant="destructive"
+                            onClick={() => logout()}
+                            className="w-full sm:w-auto"
+                        >
+                            Acknowledge & Logout
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }

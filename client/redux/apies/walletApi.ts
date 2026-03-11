@@ -29,6 +29,7 @@ export const walletApi = createApi({
     reducerPath: "walletApi",
     baseQuery: baseQuery,
     tagTypes: ["Wallet", "AdminWalletRequests"],
+    keepUnusedDataFor: 3600,
     endpoints: (builder) => ({
         // USER ENDPOINTS
         getWallet: builder.query<GetWalletResponse, void>({

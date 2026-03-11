@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useGetInvestmentScheduleQuery, useGetAdminInvestmentScheduleQuery } from "@/redux/apies/investmentApi";
 import { Loader2, ArrowLeft, TrendingUp, Calendar, Clock, CheckCircle2, AlertCircle, PieChart as PieChartIcon, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import FormattedDate from "@/components/common/FormattedDate";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -28,6 +29,11 @@ export default function InvestmentDetailsView({
     isAdmin = false
 }: InvestmentDetailsViewProps) {
     const router = useRouter();
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // User Query
     const {
@@ -251,43 +257,49 @@ export default function InvestmentDetailsView({
                         </CardHeader>
                         <CardContent className="pl-0">
                             <div className="h-[400px] w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart
-                                        data={chartData}
-                                        margin={{
-                                            top: 20,
-                                            right: 30,
-                                            left: 20,
-                                            bottom: 5,
-                                        }}
-                                    >
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                                        <XAxis
-                                            dataKey="name"
-                                            tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                                            axisLine={false}
-                                            tickLine={false}
-                                        />
-                                        <YAxis
-                                            tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                                            axisLine={false}
-                                            tickLine={false}
-                                            tickFormatter={(value) => `₹${value / 1000}k`}
-                                        />
-                                        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted)/0.3)' }} />
-                                        <Bar dataKey="amount" radius={[4, 4, 0, 0]} maxBarSize={50}>
-                                            {chartData.map((entry, index) => (
-                                                <Cell
-                                                    key={`cell-${index}`}
-                                                    fill={
-                                                        entry.status === 'Paid' ? '#22c55e' :
-                                                            entry.status === 'Processing' ? '#eab308' : '#94a3b8'
-                                                    }
-                                                />
-                                            ))}
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
+                                {mounted ? (
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart
+                                            data={chartData}
+                                            margin={{
+                                                top: 20,
+                                                right: 30,
+                                                left: 20,
+                                                bottom: 5,
+                                            }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                                            <XAxis
+                                                dataKey="name"
+                                                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                                                axisLine={false}
+                                                tickLine={false}
+                                            />
+                                            <YAxis
+                                                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tickFormatter={(value) => `₹${value / 1000}k`}
+                                            />
+                                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted)/0.3)' }} />
+                                            <Bar dataKey="amount" radius={[4, 4, 0, 0]} maxBarSize={50}>
+                                                {chartData.map((entry, index) => (
+                                                    <Cell
+                                                        key={`cell-${index}`}
+                                                        fill={
+                                                            entry.status === 'Paid' ? '#22c55e' :
+                                                                entry.status === 'Processing' ? '#eab308' : '#94a3b8'
+                                                        }
+                                                    />
+                                                ))}
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-muted/5 animate-pulse rounded-lg">
+                                        <p className="text-muted-foreground text-sm font-medium">Preparing Chart...</p>
+                                    </div>
+                                )}
                             </div>
                             <div className="flex justify-center gap-6 mt-4 text-sm">
                                 <div className="flex items-center gap-2">
@@ -341,7 +353,9 @@ export default function InvestmentDetailsView({
                                                     {item.installment_no || index + 1}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-medium">{new Date(item.payout_date).toLocaleDateString()}</p>
+                                                    <p className="text-sm font-medium">
+                                                        <FormattedDate date={item.payout_date} options={{ year: 'numeric', month: '2-digit', day: '2-digit' }} />
+                                                    </p>
                                                     <p className="text-xs text-muted-foreground">{item.status}</p>
                                                 </div>
                                             </div>

@@ -29,3 +29,6 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 export default function BlogViewPage() {
     return <BlogDetailsClient />;
 }
+
+
+export const revalidate = 3600;

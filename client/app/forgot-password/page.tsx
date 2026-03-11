@@ -26,3 +26,6 @@ export default function ForgotPasswordPage() {
         </main>
     );
 }
+
+
+export const revalidate = 3600;

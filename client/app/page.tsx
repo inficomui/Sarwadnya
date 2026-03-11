@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: "Home",
   description: "Welcome to Shree Sarwadnya All in one Solutions. Your trusted partner for financial growth and multi-services.",
 };
+
 import Navbar from '@/components/portfolio/Navbar';
 import Hero from '@/components/portfolio/Hero';
 import Specialists from '@/components/portfolio/Specialists';
@@ -21,14 +22,20 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground">
       <Navbar />
       <Hero />
-      <Specialists />
-      <AboutUs />
-      <Services />
-      <WhyChooseUs />
-      <Testimonials />
-      <FAQ />
-      <News />
-      <Footer />
+      <Suspense fallback={<div className="h-40 w-full flex items-center justify-center">Loading section...</div>}>
+        <Specialists />
+      </Suspense>
+      <Suspense fallback={null}>
+        <AboutUs />
+        <Services />
+        <WhyChooseUs />
+        <Testimonials />
+        <FAQ />
+        <News />
+        <Footer />
+      </Suspense>
     </main>
   );
 }
+
+export const revalidate = 3600;

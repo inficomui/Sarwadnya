@@ -32,28 +32,10 @@ export default function UsersPage() {
     const router = useRouter();
     const { adminUser } = useAdminAuth();
     const [walletManagerUser, setWalletManagerUser] = useState<any>(null);
-
-    // Query Params
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
-
-    // Debounce Search
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearch(search);
-            setPage(1);
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [search]);
-
-    // Reset to page 1 when perPage changes
-    useEffect(() => {
-        setPage(1);
-    }, [perPage]);
-
-    // API Hooks
     const { data: usersData, isLoading, isFetching, refetch } = useGetUsersQuery({
         page,
         per_page: perPage,
@@ -291,6 +273,19 @@ export default function UsersPage() {
             )
         }
     ];
+    // Debounce Search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+            setPage(1);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    // Reset to page 1 when perPage changes
+    useEffect(() => {
+        setPage(1);
+    }, [perPage]);
 
     return (
         <>

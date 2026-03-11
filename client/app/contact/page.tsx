@@ -14,7 +14,7 @@ import Partners from '@/components/portfolio/Partners';
 
 export default function ContactPage() {
     return (
-        <main className="min-h-screen max-h-[calc(100vh-64px)] bg-white">
+        <main className="min-h-screen bg-background">
             <Navbar />
 
             <PageHeader
@@ -47,3 +47,6 @@ export default function ContactPage() {
         </main>
     );
 }
+
+
+export const revalidate = 3600;
