@@ -15,8 +15,8 @@ import Navbar from "@/components/portfolio/Navbar";
 const adminLoginSchema = z.object({
     email: z
         .string()
-        .min(1, "Email is required")
-        .email("Please enter a valid email address"),
+        .min(1, "Email or Referral ID is required")
+        .min(3, "Please enter a valid Email or Referral ID"),
     password: z
         .string()
         .min(1, "Password is required")
@@ -71,7 +71,7 @@ export default function AdminLoginForm() {
             toast.dismiss(loadingToast);
         } catch (error) {
             console.error("Admin login error:", error);
-            toast.error("Invalid admin credentials");
+            toast.error("Invalid admin Email/Referral ID or password");
             toast.dismiss(loadingToast);
         }
     };
@@ -156,18 +156,18 @@ export default function AdminLoginForm() {
 
                                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-                                    {/* Email Field */}
+                                    {/* Email or Referral ID Field */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-semibold text-foreground ml-1">Email Address</label>
+                                        <label className="text-sm font-semibold text-foreground ml-1">Email or Referral ID</label>
                                         <div className="relative group">
                                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
                                                 <Mail size={20} />
                                             </div>
                                             <input
                                                 {...register("email")}
-                                                type="email"
+                                                type="text"
                                                 className={`w-full pl-12 pr-4 py-3.5 bg-muted/50 border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-300 ${errors.email ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-primary'}`}
-                                                placeholder="admin@example.com"
+                                                placeholder="Enter admin email or referral ID"
                                             />
                                         </div>
                                         {errors.email && (

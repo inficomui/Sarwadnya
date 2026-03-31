@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { createBaseQuery } from "./sharedBaseQuery";
-import type { TreeSummaryResponse, TreeUsersResponse, GetTreeUsersParams, TreeInvestmentSummaryResponse } from "../../lib/types";
+import type { TreeSummaryResponse, TreeUsersResponse, GetTreeUsersParams, TreeInvestmentSummaryResponse, LevelStatusResponse } from "../../lib/types";
 
 export const treeApi = createApi({
     reducerPath: "treeApi",
@@ -10,6 +10,13 @@ export const treeApi = createApi({
         getTreeSummary: builder.query<TreeSummaryResponse, void>({
             query: () => ({
                 url: "/user/tree-summary",
+                method: "GET",
+            }),
+            providesTags: ["Tree"],
+        }),
+        getReferralLevelStatus: builder.query<LevelStatusResponse, void>({
+            query: () => ({
+                url: "/user/referrals/level-status",
                 method: "GET",
             }),
             providesTags: ["Tree"],
@@ -32,4 +39,4 @@ export const treeApi = createApi({
     }),
 });
 
-export const { useGetTreeSummaryQuery, useGetTreeUsersQuery, useGetTreeInvestmentSummaryQuery } = treeApi;
+export const { useGetTreeSummaryQuery, useGetTreeUsersQuery, useGetTreeInvestmentSummaryQuery, useGetReferralLevelStatusQuery } = treeApi;

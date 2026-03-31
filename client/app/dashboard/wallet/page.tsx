@@ -26,6 +26,7 @@ import TopupDialog from '@/components/wallet/TopupDialog';
 import InvestForOthersDialog from '@/components/wallet/InvestForOthersDialog';
 import { Button } from '@/components/ui/button';
 import BankDetailsCard from '@/components/wallet/BankDetailsCard';
+import DashboardWarnings from '@/components/dashboard/DashboardWarnings';
 
 // Extracted Tab Components
 import OverviewTab from '@/components/wallet/tabs/OverviewTab';
@@ -149,6 +150,15 @@ export default function WalletPage() {
 
     return (
         <div className="space-y-6">
+            {/* Restriction Notice */}
+            <DashboardWarnings
+                isRestricted={dashboardData?.data?.profile?.is_payout_restricted || false}
+                kycStatus={dashboardData?.data?.profile?.kyc_status}
+                earningLimitReached={dashboardData?.data?.earning_limit?.reached || false}
+                earningLimitMessage={dashboardData?.data?.earning_limit?.message}
+                companySupportNotice={dashboardData?.data?.notice}
+            />
+
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-6 rounded-2xl border border-border/50 shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
@@ -198,9 +208,9 @@ export default function WalletPage() {
                                 <WalletBalanceCard balance={walletData?.data?.wallet_balance || 0} isLoading={isWalletLoading} />
                                 <div className="bg-muted/30 rounded-xl p-4 border border-border/50">
                                     <p className="mb-3 text-sm text-muted-foreground">Need more funds? Request a wallet top-up.</p>
-                                    <TopupDialog trigger={<Button className="w-full bg-primary hover:bg-primary/90 text-white py-6 shadow-lg shadow-primary/20 transition-all font-semibold"><Plus size={18} className="mr-2" strokeWidth={3} /> Request Top-up</Button>} />
+                                    <TopupDialog trigger={<Button disabled={!!dashboardData?.data?.notice} className="w-full bg-primary hover:bg-primary/90 text-white py-6 shadow-lg shadow-primary/20 transition-all font-semibold"><Plus size={18} className="mr-2" strokeWidth={3} /> Request Top-up</Button>} />
                                     <p className="mb-3 text-sm text-muted-foreground pt-4 border-t border-border/50 mt-4">Invest wallet balance for others.</p>
-                                    <InvestForOthersDialog trigger={<Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 shadow-lg shadow-indigo-500/20 transition-all font-semibold"><Users size={18} className="mr-2" strokeWidth={3} /> Invest for Others</Button>} />
+                                    <InvestForOthersDialog trigger={<Button disabled={!!dashboardData?.data?.notice} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 shadow-lg shadow-indigo-500/20 transition-all font-semibold"><Users size={18} className="mr-2" strokeWidth={3} /> Invest for Others</Button>} />
                                 </div>
                                 <BankDetailsCard />
                             </div>

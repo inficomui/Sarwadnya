@@ -134,6 +134,10 @@ export default function AdminPayoutsPage() {
     // User Dropdown State
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
     const [userSearchText, setUserSearchText] = useState("");
+    
+    // Additional Filters
+    const [filterStatus, setFilterStatus] = useState("All");
+    const [filterType, setFilterType] = useState("All");
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -145,7 +149,13 @@ export default function AdminPayoutsPage() {
         isFetching,
         refetch,
     } = useGetAdminPayoutsByRangeQuery(
-        { start_date: startDate, end_date: endDate, user_id: userId ? Number(userId) : undefined },
+        { 
+            start_date: startDate, 
+            end_date: endDate, 
+            user_id: userId ? Number(userId) : undefined,
+            status: filterStatus !== "All" ? filterStatus : undefined,
+            type: filterType !== "All" ? filterType : undefined
+        },
         { skip: !isSearchTriggered || !startDate || !endDate }
     );
 
@@ -403,9 +413,9 @@ export default function AdminPayoutsPage() {
             </div>
 
             {/* Filter Section */}
-            <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
-                <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 items-end">
-                    <div className="flex-1 w-full relative z-50">
+            <div className="bg-card p-6 rounded-xl border border-border shadow-sm overflow-visible">
+                <form onSubmit={handleSearch} className="flex flex-col md:flex-row flex-wrap gap-4 items-end">
+                    <div className="flex-1 w-full md:w-auto min-w-[200px] relative z-50">
                         <label className="block text-sm font-medium text-muted-foreground mb-1">Select User (Optional)</label>
                         <div className="relative">
                             <div
@@ -471,7 +481,7 @@ export default function AdminPayoutsPage() {
                             )}
                         </div>
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 w-full md:w-auto min-w-[150px]">
                         <label className="block text-sm font-medium text-muted-foreground mb-1">Start Date</label>
                         <div className="relative">
                             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -479,12 +489,12 @@ export default function AdminPayoutsPage() {
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                className="w-full pl-10 pr-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
                                 required
                             />
                         </div>
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 w-full md:w-auto min-w-[150px]">
                         <label className="block text-sm font-medium text-muted-foreground mb-1">End Date</label>
                         <div className="relative">
                             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -492,14 +502,40 @@ export default function AdminPayoutsPage() {
                                 type="date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                className="w-full pl-10 pr-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
                                 required
                             />
                         </div>
                     </div>
+                    <div className="flex-1 w-full md:w-auto min-w-[140px]">
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Status</label>
+                        <select
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                            className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                        >
+                            <option value="All">All Statuses</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Unmatured">Unmatured</option>
+                        </select>
+                    </div>
+                    <div className="flex-1 w-full md:w-auto min-w-[140px]">
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Income Type</label>
+                        <select
+                            value={filterType}
+                            onChange={(e) => setFilterType(e.target.value)}
+                            className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                        >
+                            <option value="All">All Types</option>
+                            <option value="roi">ROI Income</option>
+                            <option value="referral">Referral Income</option>
+                        </select>
+                    </div>
                     <Button
                         type="submit"
-                        className="w-full md:w-auto"
+                        className="w-full md:w-auto mt-4 md:mt-0"
                     >
                         <Search size={18} className="mr-2" />
                         Generate Report

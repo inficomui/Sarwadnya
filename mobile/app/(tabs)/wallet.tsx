@@ -18,6 +18,7 @@ import Toast from 'react-native-toast-message';
 import { BorderRadius, FontSize, Gradients, Shadow, Spacing, ThemeColors } from '../../constants/Theme';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useGetUserDashboardQuery } from '../../redux/apies/dashboardApi';
 import { useGetWalletQuery, useRequestTopupMutation } from '../../redux/apies/walletApi';
 
 // Modular Components
@@ -35,7 +36,9 @@ export default function WalletScreen() {
     const { user } = useAuth();
     const { colors, isDark } = useTheme();
     const { data: walletData, isLoading, isFetching, refetch } = useGetWalletQuery();
+    const { data: dashboardData } = useGetUserDashboardQuery();
     const [requestTopup, { isLoading: isSubmitting }] = useRequestTopupMutation();
+    const notice = dashboardData?.data?.notice;
 
     const styles = useMemo(() => createStyles(colors), [colors]);
 
@@ -160,6 +163,15 @@ export default function WalletScreen() {
                     />
                 }
             >
+                {notice && (
+                    <View style={styles.noticeBox}>
+                        <Ionicons name="information-circle" size={20} color={colors.primary.start} />
+                        <View style={styles.alertContent}>
+                            <Text style={styles.noticeTitle}>Account Protection Notice</Text>
+                            <Text style={styles.noticeMsg}>{notice}</Text>
+                        </View>
+                    </View>
+                )}
                 <WalletCard
                     balance={balance}
                     userName={user?.name || "User"}
@@ -168,8 +180,9 @@ export default function WalletScreen() {
 
                 <View style={styles.actionRow}>
                     <TouchableOpacity
-                        style={styles.actionBtn}
-                        onPress={() => setModalVisible(true)}
+                        style={[styles.actionBtn, !!notice && styles.disabledBtn]}
+                        onPress={() => !notice && setModalVisible(true)}
+                        disabled={!!notice}
                     >
                         <LinearGradient
                             colors={Gradients.secondary as [string, string, ...string[]]}
@@ -179,10 +192,11 @@ export default function WalletScreen() {
                         </LinearGradient>
                         <Text style={styles.actionText}>Top-up</Text>
                     </TouchableOpacity>
-
+ 
                     <TouchableOpacity
-                        style={styles.actionBtn}
-                        onPress={() => setUserSelectionVisible(true)}
+                        style={[styles.actionBtn, !!notice && styles.disabledBtn]}
+                        onPress={() => !notice && setUserSelectionVisible(true)}
+                        disabled={!!notice}
                     >
                         <LinearGradient
                             colors={['#8b5cf6', '#7c3aed'] as [string, string, ...string[]]}
@@ -439,5 +453,29 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 40,
         lineHeight: 20,
+    },
+    noticeBox: {
+        flexDirection: 'row',
+        backgroundColor: colors.primary.start + '10',
+        padding: Spacing.md,
+        borderRadius: BorderRadius.lg,
+        borderWidth: 1,
+        borderColor: colors.primary.start + '20',
+        marginBottom: Spacing.lg,
+        alignItems: 'center',
+    },
+    alertContent: {
+        flex: 1,
+        marginLeft: Spacing.sm,
+    },
+    noticeTitle: {
+        fontSize: FontSize.md,
+        fontWeight: 'bold',
+        color: colors.primary.start,
+    },
+    noticeMsg: {
+        fontSize: FontSize.sm,
+        color: colors.primary.start,
+        opacity: 0.8,
     },
 });

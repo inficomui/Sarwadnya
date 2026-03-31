@@ -44,7 +44,12 @@ export default function ReferralDashboardPage() {
 
     const summary = summaryData?.data;
     const history = historyData?.data;
-    const earningsList = history?.data || [];
+    const earningsList = React.useMemo(() => {
+        const list = history?.data || [];
+        return [...list].sort((a, b) => 
+            new Date(a.payout_date).getTime() - new Date(b.payout_date).getTime()
+        );
+    }, [history?.data]);
     const totalItems = history?.total || 0;
     const totalPages = history?.last_page || 1;
 

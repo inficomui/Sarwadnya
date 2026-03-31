@@ -11,7 +11,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useLoginUserMutation } from '@/redux/apies/authApi';
 
 const loginSchema = z.object({
-    email: z.string().email({ message: "Invalid email address" }),
+    email: z.string().min(1, { message: "Referral ID is required" }),
     password: z.string().min(6, { message: "Password must be at least 6 characters" }),
 });
 
@@ -56,7 +56,7 @@ export default function Login() {
 
         } catch (err: any) {
             console.error("Login Failed:", err);
-            toast.error(err?.data?.message || "Invalid email or password");
+            toast.error(err?.data?.message || "Invalid Referral ID or password");
         }
     };
 
@@ -136,18 +136,18 @@ export default function Login() {
 
                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-                                {/* Email Field */}
+                                {/* Referral ID Field */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-foreground ml-1">Email Address</label>
+                                    <label className="text-sm font-semibold text-foreground ml-1">Referral ID</label>
                                     <div className="relative group">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
-                                            <Mail size={20} />
+                                            <ShieldCheck size={20} />
                                         </div>
                                         <input
                                             {...register("email")}
-                                            type="email"
+                                            type="text"
                                             className={`w-full pl-12 pr-4 py-3.5 bg-muted/50 border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-300 ${errors.email ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-primary'}`}
-                                            placeholder="name@example.com"
+                                            placeholder="Enter your referral ID"
                                         />
                                     </div>
                                     {errors.email && (

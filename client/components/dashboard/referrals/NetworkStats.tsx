@@ -4,7 +4,7 @@ import { TrendingUp } from 'lucide-react';
 interface NetworkStatsProps {
     totalReferrals: number;
     totalTeamInvestment: number;
-    levels: Record<string, number>;
+    levels: Record<string, any>;
     investmentLevels: Record<string, number>;
     maxLevel: number;
 }
@@ -42,25 +42,43 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Level Breakdown</p>
                     <div className="space-y-1.5 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent pr-1">
                         {Array.from({ length: maxLevel }, (_, i) => i + 1).map((level) => {
-                            const count = levels[`level_${level}`] || 0;
+                            const levelData = levels[`level_${level}`];
+                            const count = levelData?.total || 0;
+                            const activeCount = levelData?.active || 0;
+                            const inactiveCount = levelData?.inactive || 0;
                             const investAmount = investmentLevels[`level_${level}`] || 0;
                             const percentage = totalReferrals > 0 ? (count / totalReferrals) * 100 : 0;
+                            const activePercentage = count > 0 ? (activeCount / count) * 100 : 0;
 
                             return (
-                                <div key={level} className="group">
-                                    <div className="flex items-center justify-between text-xs mb-1">
-                                        <span className="text-muted-foreground font-medium">L{level}</span>
+                                <div key={level} className="group p-2 rounded-xl hover:bg-muted/50 transition-colors">
+                                    <div className="flex items-center justify-between text-xs mb-1.5">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-foreground font-semibold">{count}</span>
+                                            <span className="font-bold text-foreground">L{level}</span>
                                             <span className="text-muted-foreground">•</span>
-                                            <span className="text-green-600 font-mono text-[10px]">₹{investAmount.toLocaleString()}</span>
+                                            <span className="text-foreground/80">{count} Members</span>
                                         </div>
+                                        <span className="text-green-600 font-bold">₹{investAmount.toLocaleString()}</span>
                                     </div>
-                                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-linear-to-r from-primary to-purple-600 rounded-full transition-all duration-500"
-                                            style={{ width: `${percentage}%` }}
-                                        />
+                                    <div className="flex items-center gap-3 mb-1.5">
+                                        <div className="flex items-center gap-1.5 flex-1">
+                                            <div className="h-1 flex-1 bg-muted rounded-full overflow-hidden">
+                                                <div
+                                                    className="h-full bg-green-500 rounded-full transition-all duration-700"
+                                                    style={{ width: `${activePercentage}%` }}
+                                                />
+                                            </div>
+                                            <span className="text-[10px] text-green-600 font-medium min-w-[12px]">{activeCount}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 flex-1">
+                                            <div className="h-1 flex-1 bg-muted rounded-full overflow-hidden text-right">
+                                                <div
+                                                    className="h-full bg-red-400 rounded-full transition-all duration-700 ml-auto"
+                                                    style={{ width: `${count > 0 ? (inactiveCount / count) * 100 : 0}%` }}
+                                                />
+                                            </div>
+                                            <span className="text-[10px] text-red-500 font-medium min-w-[12px]">{inactiveCount}</span>
+                                        </div>
                                     </div>
                                 </div>
                             );

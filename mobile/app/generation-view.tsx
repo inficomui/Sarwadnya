@@ -10,12 +10,15 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
+    Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BorderRadius, FontSize, Gradients, Shadow, Spacing, ThemeColors } from '../constants/Theme';
 import { useTheme } from '../context/ThemeContext';
-import { useGetTreeInvestmentSummaryQuery, useGetTreeSummaryQuery, useGetTreeUsersQuery } from '../redux/apies/treeApi';
+import { useGetTreeInvestmentSummaryQuery, useGetTreeSummaryQuery, useGetTreeUsersQuery, useGetReferralLevelStatusQuery } from '../redux/apies/treeApi';
+
+const { width } = Dimensions.get('window');
 
 export default function GenerationViewScreen() {
     const router = useRouter();
@@ -24,6 +27,7 @@ export default function GenerationViewScreen() {
     const [page, setPage] = useState(1);
 
     const { data: treeSummary, isLoading: isSummaryLoading, refetch: refetchSummary } = useGetTreeSummaryQuery();
+    const { data: levelStatus, isLoading: isStatusLoading, refetch: refetchStatus } = useGetReferralLevelStatusQuery();
     const { data: investmentSummary, isLoading: isInvestmentLoading, refetch: refetchInvestmentSummary } = useGetTreeInvestmentSummaryQuery();
     const { data: levelUsers, isLoading: isUsersLoading, refetch: refetchUsers, isFetching } = useGetTreeUsersQuery({
         level: selectedLevel,
@@ -35,13 +39,22 @@ export default function GenerationViewScreen() {
 
     const onRefresh = useCallback(() => {
         refetchSummary();
+        refetchStatus();
         refetchInvestmentSummary();
         refetchUsers();
-    }, [refetchSummary, refetchInvestmentSummary, refetchUsers]);
+    }, [refetchSummary, refetchStatus, refetchInvestmentSummary, refetchUsers]);
 
-    const totalReferrals = treeSummary?.data?.total_referrals || 0;
+    const totalReferrals = treeSummary?.data?.summary?.total_team ?? 0;
+    const unlockedLevelsCount = treeSummary?.data?.summary?.unlocked_levels ?? 1;
+    const totalTeamBusiness = treeSummary?.data?.summary?.total_team_investment ?? 0;
+    const totalDirectBusiness = treeSummary?.data?.summary?.total_direct_investment ?? 0;
+
+    // Next level logic
+    const nextLevelTarget = unlockedLevelsCount * 100000;
+    const progressPercent = Math.min((totalDirectBusiness / nextLevelTarget), 1);
+    
     const levels = treeSummary?.data?.levels || {};
-    const totalTeamInvestment = investmentSummary?.data?.total_team_investment || 0;
+    const statusLevels = levelStatus?.data?.levels || {};
     const investmentLevels = investmentSummary?.data?.levels || {};
 
     const maxLevel = Math.max(
@@ -58,9 +71,13 @@ export default function GenerationViewScreen() {
 
     const renderLevelButton = ({ item }: { item: number }) => {
         const levelKey = `level_${item}`;
-        const count = levels[levelKey] || 0;
+        const levelData = levels[levelKey];
+        const statusData = statusLevels[levelKey];
+        
+        const count = levelData?.total || 0;
         const investment = investmentLevels[levelKey] || 0;
         const isActive = selectedLevel === item;
+        const isUnlocked = statusData ? statusData.is_unlocked : (levelData?.unlocked !== false);
 
         if (isActive) {
             return (
@@ -80,7 +97,7 @@ export default function GenerationViewScreen() {
                                 Level {item}
                             </Text>
                             <View style={styles.activeIconBadge}>
-                                <Ionicons name="stats-chart" size={12} color={colors.primary.start} />
+                                <Ionicons name={isUnlocked ? "stats-chart" : "lock-closed"} size={12} color={colors.primary.start} />
                             </View>
                         </View>
                         <Text style={[styles.levelCount, styles.textWhite]}>
@@ -99,26 +116,52 @@ export default function GenerationViewScreen() {
 
         return (
             <TouchableOpacity
-                style={[styles.levelCardWrapper, styles.levelCard, styles.inactiveLevelCard]}
+                style={[
+                    styles.levelCardWrapper, 
+                    styles.levelCard, 
+                    styles.inactiveLevelCard, 
+                    !isUnlocked ? styles.lockedLevelCard : styles.unlockedLevelCard
+                ]}
                 onPress={() => handleLevelChange(item)}
                 activeOpacity={0.7}
             >
                 <View style={styles.levelHeader}>
-                    <Text style={styles.levelLabel}>Level {item}</Text>
-                    <Ionicons name="chevron-forward" size={16} color={colors.text.muted} />
+                    <View>
+                        <Text style={[styles.levelLabel, !isUnlocked ? { color: colors.text.muted } : { color: colors.status.success }]}>
+                            Level {item}
+                        </Text>
+                        <View style={styles.statusRow}>
+                            <Ionicons 
+                                name={isUnlocked ? "shield-checkmark" : "lock-closed"} 
+                                size={10} 
+                                color={isUnlocked ? colors.status.success : colors.status.error} 
+                            />
+                            <Text style={[styles.statusText, { color: isUnlocked ? colors.status.success : colors.status.error }]}>
+                                {isUnlocked ? "Active" : "Locked"}
+                            </Text>
+                        </View>
+                    </View>
+                    <Ionicons 
+                        name={isUnlocked ? "chevron-forward" : "lock-closed"} 
+                        size={16} 
+                        color={isUnlocked ? colors.text.muted : colors.status.error} 
+                    />
                 </View>
-                <Text style={styles.levelCount}>
+                <Text style={[styles.levelCount, !isUnlocked && { color: colors.text.muted }]}>
                     {count} {count === 1 ? 'Member' : 'Members'}
                 </Text>
                 <Text style={styles.levelInvestment}>
                     ₹{Number(investment).toLocaleString('en-IN')}
                 </Text>
+                {!isUnlocked && statusData?.required_business > 0 && (
+                    <Text style={styles.lockedText}>Need ₹{statusData.required_business.toLocaleString()}</Text>
+                )}
             </TouchableOpacity>
         );
     };
 
     const renderUserItem = ({ item }: { item: any }) => {
-        const isActive = (item.total_investment > 0 || item.investment > 0);
+        const isActive = (item.total_investment > 0 || item.investment > 0 || item.is_active);
         return (
             <View style={styles.userCard}>
                 <View style={styles.userHeader}>
@@ -166,7 +209,7 @@ export default function GenerationViewScreen() {
         );
     };
 
-    if (isSummaryLoading && !treeSummary) {
+    if ((isSummaryLoading || isStatusLoading) && !treeSummary) {
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.loadingContainer}>
@@ -201,36 +244,81 @@ export default function GenerationViewScreen() {
                     <RefreshControl refreshing={isFetching} onRefresh={onRefresh} tintColor={colors.primary.start} />
                 }
             >
-                {/* Summary Cards */}
-                <View style={styles.summaryRow}>
+                {/* Level Progress Gauge */}
+                <View style={[styles.progressCard, { backgroundColor: colors.background.card }]}>
+                    <View style={styles.progressHeader}>
+                        <View>
+                            <Text style={styles.progressTitle}>Level {unlockedLevelsCount + 1} Progress</Text>
+                            <Text style={styles.progressSubtitle}>Direct Business: ₹{totalDirectBusiness.toLocaleString()}</Text>
+                        </View>
+                        <View style={styles.badgeContainer}>
+                             <Text style={styles.unlockedBadge}>{unlockedLevelsCount} Unlocked</Text>
+                        </View>
+                    </View>
+                    
+                    <View style={styles.progressBarBg}>
+                        <LinearGradient
+                            colors={[colors.primary.start, colors.primary.end]}
+                            style={[styles.progressBarFill, { width: `${progressPercent * 100}%` }]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                        />
+                    </View>
+                    
+                    <View style={styles.progressFooter}>
+                        <Text style={styles.progressFooterText}>
+                            Goal: ₹{nextLevelTarget.toLocaleString()} (₹{(nextLevelTarget - totalDirectBusiness > 0 ? nextLevelTarget - totalDirectBusiness : 0).toLocaleString()} more)
+                        </Text>
+                        <Text style={styles.progressPercentText}>{Math.round(progressPercent * 100)}%</Text>
+                    </View>
+
+                    {/* Requirements Cheat Sheet */}
+                    <View style={styles.requirementsList}>
+                        <Text style={styles.requirementsTitle}>UNLOCkING RULES (DIRECT BUSINESS ONLY)</Text>
+                        <View style={styles.requirementsRow}>
+                            <Text style={styles.requirementText}>LVL 2: ₹1.0 L</Text>
+                            <Text style={styles.requirementText}>LVL 4: ₹3.0 L</Text>
+                            <Text style={styles.requirementText}>LVL 6: ₹5.0 L</Text>
+                        </View>
+                        <View style={styles.requirementsRow}>
+                            <Text style={styles.requirementText}>LVL 3: ₹2.0 L</Text>
+                            <Text style={styles.requirementText}>LVL 5: ₹4.0 L</Text>
+                            <Text style={styles.requirementText}>LVL 9: ₹8.0 L</Text>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Summary Grid */}
+                <View style={styles.summaryGrid}>
                     <LinearGradient
                         colors={Gradients.primary as [string, string, ...string[]]}
-                        style={[styles.summaryCard, { flex: 1 }]}
+                        style={styles.summaryCard}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                     >
-                        <Ionicons name="people" size={32} color="rgba(255,255,255,0.3)" />
-                        <Text style={styles.summaryLabel}>Total Network</Text>
-                        <Text style={styles.summaryValue}>{totalReferrals}</Text>
+                        <Ionicons name="briefcase" size={24} color="rgba(255,255,255,0.3)" />
+                        <Text style={styles.summaryLabel}>Total Team Business</Text>
+                        <Text style={styles.summaryValue}>₹{Number(totalTeamBusiness).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</Text>
                     </LinearGradient>
 
                     <LinearGradient
-                        colors={Gradients.secondary as [string, string, ...string[]]}
-                        style={[styles.summaryCard, { flex: 1 }]}
+                        colors={Gradients.accent2 as [string, string, ...string[]]}
+                        style={styles.summaryCard}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                     >
-                        <Ionicons name="briefcase" size={32} color="rgba(255,255,255,0.3)" />
-                        <Text style={styles.summaryLabel}>Team Investment</Text>
-                        <Text style={styles.summaryValue}>
-                            ₹{Number(totalTeamInvestment).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                        </Text>
+                        <Ionicons name="people" size={24} color="rgba(255,255,255,0.3)" />
+                        <Text style={styles.summaryLabel}>Net Connections</Text>
+                        <Text style={styles.summaryValue}>{totalReferrals}</Text>
                     </LinearGradient>
                 </View>
 
                 {/* Level Selector */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Select Level</Text>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Network Levels</Text>
+                        <Text style={styles.sectionSubtitle}>1 - {maxLevel} Generations</Text>
+                    </View>
                     <FlatList
                         data={Array.from({ length: maxLevel }, (_, i) => i + 1)}
                         renderItem={renderLevelButton}
@@ -244,7 +332,7 @@ export default function GenerationViewScreen() {
                 {/* Users List */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>
-                        Level {selectedLevel} Members ({levels[`level_${selectedLevel}`] || 0})
+                        Level {selectedLevel} Members ({levels[`level_${selectedLevel}`]?.total || 0})
                     </Text>
 
                     {isUsersLoading ? (
@@ -312,9 +400,10 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        paddingVertical: Spacing.xl,
     },
     loadingText: {
-        marginTop: Spacing.md,
+        marginTop: Spacing.sm,
         color: colors.text.muted,
         fontSize: FontSize.md,
     },
@@ -356,35 +445,51 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         paddingHorizontal: Spacing.xl,
         paddingBottom: 40,
     },
-    summaryRow: {
+    summaryGrid: {
         flexDirection: 'row',
-        gap: Spacing.md,
+        flexWrap: 'wrap',
+        gap: 10,
         marginBottom: Spacing.xl,
     },
     summaryCard: {
-        padding: Spacing.lg,
+        flex: 1,
+        minWidth: (width - Spacing.xl * 2 - 20) / 2,
+        padding: Spacing.md,
         borderRadius: BorderRadius.xl,
         ...Shadow.medium,
+        justifyContent: 'center',
     },
     summaryLabel: {
-        fontSize: FontSize.xs,
+        fontSize: 10,
         color: 'rgba(255,255,255,0.8)',
-        marginTop: Spacing.sm,
+        marginTop: Spacing.xs,
+        textTransform: 'uppercase',
+        fontWeight: '600',
     },
     summaryValue: {
-        fontSize: FontSize.xl,
+        fontSize: FontSize.md,
         fontWeight: 'bold',
         color: '#fff',
-        marginTop: 4,
+        marginTop: 2,
     },
     section: {
         marginBottom: Spacing.xl,
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: Spacing.md,
     },
     sectionTitle: {
         fontSize: FontSize.md,
         fontWeight: 'bold',
         color: colors.text.primary,
-        marginBottom: Spacing.md,
+    },
+    sectionSubtitle: {
+        fontSize: 10,
+        color: colors.text.muted,
+        fontWeight: '600',
     },
     levelList: {
         paddingRight: Spacing.xl,
@@ -405,6 +510,20 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         borderColor: colors.border,
         ...Shadow.small,
     },
+    lockedLevelCard: {
+        backgroundColor: colors.background.secondary,
+        opacity: 0.8,
+    },
+    unlockedLevelCard: {
+        backgroundColor: colors.status.success + '10',
+        borderColor: colors.status.success + '30',
+    },
+    statusRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        marginTop: 2,
+    },
     activeLevelCard: {
         ...Shadow.medium,
         borderWidth: 0,
@@ -416,7 +535,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         marginBottom: 8,
     },
     levelLabel: {
-        fontSize: FontSize.xs,
+        fontSize: 10,
         color: colors.text.secondary,
         fontWeight: '700',
         textTransform: 'uppercase',
@@ -444,6 +563,12 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         color: colors.text.muted,
         fontWeight: '500',
     },
+    lockedText: {
+        fontSize: 8,
+        color: colors.status.error,
+        fontWeight: '600',
+        marginTop: 4,
+    },
     investmentBadge: {
         backgroundColor: 'rgba(255,255,255,0.2)',
         borderRadius: 8,
@@ -460,6 +585,97 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         fontSize: 13,
         fontWeight: '700',
         color: '#fff',
+    },
+    progressCard: {
+        padding: 20,
+        marginHorizontal: 20,
+        marginVertical: 15,
+        borderRadius: BorderRadius.xl,
+        borderWidth: 1,
+        borderColor: colors.border,
+        ...Shadow.medium,
+    },
+    progressHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: 15,
+    },
+    progressTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: colors.text.primary,
+    },
+    progressSubtitle: {
+        fontSize: 12,
+        color: colors.text.muted,
+        marginTop: 2,
+    },
+    badgeContainer: {
+        backgroundColor: colors.primary.start + '15',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+    },
+    unlockedBadge: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: colors.primary.start,
+    },
+    progressBarBg: {
+        height: 8,
+        backgroundColor: colors.background.secondary,
+        borderRadius: 4,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: colors.border,
+    },
+    progressBarFill: {
+        height: '100%',
+        borderRadius: 4,
+    },
+    progressFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    progressFooterText: {
+        fontSize: 10,
+        color: colors.text.muted,
+        fontStyle: 'italic',
+    },
+    progressPercentText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: colors.primary.start,
+    },
+    requirementsList: {
+        marginTop: 15,
+        paddingTop: 15,
+        borderTopWidth: 1,
+        borderTopColor: colors.border,
+    },
+    requirementsTitle: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: colors.text.muted,
+        marginBottom: 8,
+        letterSpacing: 0.5,
+    },
+    requirementsRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 4,
+    },
+    requirementText: {
+        fontSize: 9,
+        fontWeight: '600',
+        color: colors.text.secondary,
+        backgroundColor: colors.background.secondary,
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
     },
     userCard: {
         backgroundColor: colors.background.card,
@@ -581,7 +797,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 8,
         paddingVertical: 4,
-        // backgroundColor: '#f1f5f9', // Updated dynamically in component
         borderRadius: 12,
         gap: 4,
         alignSelf: 'flex-start',

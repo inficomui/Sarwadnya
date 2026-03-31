@@ -43,7 +43,8 @@ export default function DirectDistributorPage() {
     };
 
     // Calculate total directs 
-    const directCount = treeSummary?.data?.levels?.level_1 || 0;
+    const level1Data = treeSummary?.data?.levels?.level_1;
+    const directCount = typeof level1Data === 'object' ? level1Data.total : (level1Data || 0);
 
     const [selectedReferral, setSelectedReferral] = useState<{ id: number, name: string, email?: string } | null>(null);
     const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);

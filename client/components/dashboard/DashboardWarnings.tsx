@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Lock, AlertTriangle, FileText } from 'lucide-react';
+import { Lock, AlertTriangle, FileText, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
@@ -10,18 +10,37 @@ interface DashboardWarningsProps {
     earningLimitReached: boolean;
     earningLimitMessage?: string;
     kycStatus?: string;
+    companySupportNotice?: string;
 }
 
 const DashboardWarnings = ({
     isRestricted,
     earningLimitReached,
     earningLimitMessage,
-    kycStatus
+    kycStatus,
+    companySupportNotice
 }: DashboardWarningsProps) => {
     const router = useRouter();
 
     return (
         <div className="space-y-4 mb-6">
+            {/* Company Support Notice */}
+            {companySupportNotice && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 rounded-r-lg flex items-start gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-full text-blue-600 dark:text-blue-400 shrink-0">
+                        <Activity size={24} />
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200">
+                            Account Protection Notice
+                        </h3>
+                        <p className="text-blue-700 dark:text-blue-300 mt-1">
+                            {companySupportNotice}
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {/* Restricted User Warning */}
             {isRestricted && (
                 <div className="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-500 p-4 rounded-r-lg flex items-start gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">

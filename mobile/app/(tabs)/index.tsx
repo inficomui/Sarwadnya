@@ -14,6 +14,7 @@ import { DashboardHeader } from '../../components/dashboard/DashboardHeader';
 import { QuickActions } from '../../components/dashboard/QuickActions';
 import { ReferralCard } from '../../components/dashboard/ReferralCard';
 import { StatsGrid } from '../../components/dashboard/StatsGrid';
+import { DashboardMenuSections } from '../../components/dashboard/DashboardMenuSections';
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -35,7 +36,7 @@ export default function HomeScreen() {
         );
     }
 
-    const { profile, financials, account, network, referral, earning_limit } = dashboardData?.data || {};
+    const { profile, financials, account, network, referral, earning_limit, notice } = dashboardData?.data || {};
 
     const isWalletActive = account?.is_wallet_active ?? false;
     const walletBalance = Number(financials?.available_balance || 0);
@@ -69,6 +70,16 @@ export default function HomeScreen() {
                 />
 
                 {/* Status Alerts */}
+                {notice && (
+                    <View style={styles.noticeBox}>
+                        <Ionicons name="information-circle" size={20} color={colors.primary.start} />
+                        <View style={styles.alertContent}>
+                            <Text style={styles.noticeTitle}>Account Protection Notice</Text>
+                            <Text style={styles.noticeMsg}>{notice}</Text>
+                        </View>
+                    </View>
+                )}
+
                 {earning_limit?.reached && (
                     <View style={styles.alertBox}>
                         <Ionicons name="alert-circle" size={20} color={colors.status.error} />
@@ -91,23 +102,7 @@ export default function HomeScreen() {
 
                 <QuickActions isWalletActive={isWalletActive} />
 
-                {/* Downloads Section */}
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Downloads</Text>
-                    <TouchableOpacity
-                        style={styles.downloadCard}
-                        onPress={() => router.push('/welcome-letter')}
-                    >
-                        <View style={styles.downloadIcon}>
-                            <Ionicons name="document-text" size={24} color="#fff" />
-                        </View>
-                        <View style={styles.downloadInfo}>
-                            <Text style={styles.downloadTitle}>Welcome Letter</Text>
-                            <Text style={styles.downloadSubtitle}>Official Membership Document</Text>
-                        </View>
-                        <Ionicons name="chevron-forward" size={20} color={colors.text.muted} />
-                    </TouchableOpacity>
-                </View>
+                <DashboardMenuSections />
 
                 <StatsGrid
                     directTeam={Number(network?.direct_partners || 0)}
@@ -179,46 +174,24 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
         color: colors.status.warning,
         opacity: 0.8,
     },
-    sectionContainer: {
-        marginBottom: Spacing.xl,
-    },
-    sectionTitle: {
-        fontSize: FontSize.lg,
-        fontWeight: 'bold',
-        color: colors.text.primary,
-        marginBottom: Spacing.md,
-        paddingHorizontal: Spacing.xs,
-    },
-    downloadCard: {
+    noticeBox: {
         flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: colors.background.card,
+        backgroundColor: colors.primary.start + '10',
         padding: Spacing.md,
-        borderRadius: BorderRadius.xl,
-        ...Shadow.small, // Note: Shadow might need adjustment for dark mode (e.g. less opacity or white) but keep for now
+        borderRadius: BorderRadius.lg,
         borderWidth: 1,
-        borderColor: colors.border,
-    },
-    downloadIcon: {
-        width: 48,
-        height: 48,
-        borderRadius: 16,
-        backgroundColor: colors.primary.start,
-        justifyContent: 'center',
+        borderColor: colors.primary.start + '20',
+        marginBottom: Spacing.lg,
         alignItems: 'center',
-        marginRight: Spacing.md,
     },
-    downloadInfo: {
-        flex: 1,
-    },
-    downloadTitle: {
+    noticeTitle: {
         fontSize: FontSize.md,
         fontWeight: 'bold',
-        color: colors.text.primary,
-        marginBottom: 2,
+        color: colors.primary.start,
     },
-    downloadSubtitle: {
-        fontSize: FontSize.xs,
-        color: colors.text.secondary,
+    noticeMsg: {
+        fontSize: FontSize.sm,
+        color: colors.primary.start,
+        opacity: 0.8,
     },
 });

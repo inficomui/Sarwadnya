@@ -17,6 +17,7 @@ import {
     UserPlus,
     FileText,
     Share2,
+    PieChart,
 } from 'lucide-react';
 import { useGetUserDashboardQuery } from '@/redux/apies/dashboardApi';
 import DashboardStatCard from '@/components/dashboard/DashboardStatCard';
@@ -61,10 +62,10 @@ export default function DashboardPage() {
             },
             {
                 title: "TOTAL TEAM",
-                value: network?.total_team_size || 0,
+                value: typeof network?.total_team_size === 'object' ? network.total_team_size.total : (network?.total_team_size || 0),
                 icon: Users,
                 color: "bg-blue-600",
-                subtitle: `Direct: ${network?.direct_partners || 0}`
+                subtitle: `Direct: ${typeof network?.direct_partners === 'object' ? network.direct_partners.total : (network?.direct_partners || 0)}`
             },
         ];
     }, [dashboardData]);
@@ -101,7 +102,8 @@ export default function DashboardPage() {
             color: "bg-indigo-900",
             items: [
                 { label: "Payout History", href: "/dashboard/payouts", icon: History },
-                { label: "Payment Details", href: "/dashboard/payouts", icon: CreditCard },
+                { label: "Payment Details", href: "/dashboard/payout-details", icon: CreditCard },
+                // { label: "Weekly Report", href: "/dashboard/weekly-report", icon: PieChart },
                 { label: "Change TXN Password", href: "/dashboard/profile", icon: ShieldCheck },
             ]
         },
@@ -173,9 +175,10 @@ export default function DashboardPage() {
             {/* Warnings Section */}
             <DashboardWarnings
                 isRestricted={profile?.is_payout_restricted}
-                kycStatus={account?.kyc_status}
+                kycStatus={dashboardData?.data?.profile?.kyc_status}
                 earningLimitReached={data?.earning_limit?.reached || false}
                 earningLimitMessage={data?.earning_limit?.message}
+                companySupportNotice={data?.notice}
             />
 
             {/* Referral Section */}

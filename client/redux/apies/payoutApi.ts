@@ -1,6 +1,16 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { createBaseQuery } from "./sharedBaseQuery";
-import type { GetPayoutsResponse, GetPayoutsParams, GetPayoutsByRangeResponse, GetPayoutsByRangeParams, MaturePayoutRequest, MaturePayoutResponse } from "../../lib/types";
+import type { 
+    GetPayoutsResponse, 
+    GetPayoutsParams, 
+    GetPayoutsByRangeResponse, 
+    GetPayoutsByRangeParams, 
+    MaturePayoutRequest, 
+    MaturePayoutResponse,
+    GetWeeklyReportResponse,
+    GetWeeklyReportParams,
+    GetBonusHistoryResponse
+} from "../../lib/types";
 
 export const payoutApi = createApi({
     reducerPath: "payoutApi",
@@ -27,6 +37,25 @@ export const payoutApi = createApi({
             }),
             providesTags: ["Payouts"],
         }),
+        
+        // User: Get Weekly Payout Report (Cycle-wise)
+        getWeeklyReport: builder.query<GetWeeklyReportResponse, GetWeeklyReportParams | void>({
+            query: (params) => ({
+                url: "/user/payouts/weekly-report",
+                method: "GET",
+                params: params || {},
+            }),
+            providesTags: ["Payouts"],
+        }),
+
+        // User: Get Bonus History
+        getBonusHistory: builder.query<GetBonusHistoryResponse, void>({
+            query: () => ({
+                url: "/user/payouts/bonus-history",
+                method: "GET",
+            }),
+            providesTags: ["Payouts"],
+        }),
 
         // Admin: Mature Payout
         maturePayout: builder.mutation<MaturePayoutResponse, MaturePayoutRequest>({
@@ -42,5 +71,7 @@ export const payoutApi = createApi({
 export const {
     useGetMyPayoutsQuery,
     useGetPayoutsByRangeQuery,
+    useGetWeeklyReportQuery,
+    useGetBonusHistoryQuery,
     useMaturePayoutMutation
 } = payoutApi;

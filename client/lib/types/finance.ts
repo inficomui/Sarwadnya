@@ -252,11 +252,55 @@ export interface GetPayoutsByRangeParams {
     start_date?: string;
     end_date?: string;
     user_id?: number; // Optional for admin to filter by user
+    status?: string;
+    type?: string;
 }
 
 export interface GetPayoutsByRangeResponse {
     status: string;
     data: Payout[];
+}
+
+
+export interface WeeklyReportItem {
+    cycle: number;
+    range: string;
+    start_date: string;
+    end_date: string;
+    self_bonus: number;
+    referral_bonus: number;
+    total: number;
+    count: number;
+}
+
+export interface GetWeeklyReportResponse {
+    status: string;
+    data: {
+        month: number;
+        year: number;
+        report: WeeklyReportItem[];
+    };
+}
+
+export interface GetWeeklyReportParams {
+    month?: string;
+    year?: string;
+}
+
+export interface BonusHistoryItem {
+    type: "Self Bonus" | "Level Bonus";
+    payout_no: number;
+    date: string;
+    gross: number;
+    tds: number;
+    admin: number;
+    bank: number;
+    status?: string;
+}
+
+export interface GetBonusHistoryResponse {
+    status: string;
+    data: BonusHistoryItem[];
 }
 
 

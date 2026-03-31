@@ -130,15 +130,28 @@ export const GenerationUserList: React.FC<GenerationUserListProps> = ({
                                         <td className="px-4 py-3 rounded-l-xl">
                                             <div className="flex items-center gap-3">
                                                 <div className="relative">
-                                                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-background group-hover:scale-110 transition-transform duration-300">
+                                                    <div className={cn(
+                                                        "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-background group-hover:scale-110 transition-transform duration-300",
+                                                        user.status === 'active' ? "bg-linear-to-br from-green-500 to-emerald-600 text-white" : "bg-linear-to-br from-slate-400 to-slate-500 text-white"
+                                                    )}>
                                                         {getInitials(user.name)}
                                                     </div>
-                                                    <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-card flex items-center justify-center">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+                                                    <div className={cn(
+                                                        "absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-card flex items-center justify-center",
+                                                        user.status === 'active' ? "bg-green-500" : "bg-slate-400"
+                                                    )}>
+                                                        <div className={cn("w-1.5 h-1.5 rounded-full bg-white", user.status === 'active' && "animate-pulse")}></div>
                                                     </div>
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="font-semibold text-foreground group-hover:text-primary transition-colors text-base">{user.name}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-semibold text-foreground group-hover:text-primary transition-colors text-base">{user.name}</span>
+                                                        {user.status === 'active' ? (
+                                                            <span className="text-[10px] bg-green-500/10 text-green-600 px-1.5 py-0.5 rounded-full font-bold border border-green-500/20 uppercase tracking-tighter">Active</span>
+                                                        ) : (
+                                                            <span className="text-[10px] bg-slate-500/10 text-slate-600 px-1.5 py-0.5 rounded-full font-bold border border-slate-500/20 uppercase tracking-tighter">Inactive</span>
+                                                        )}
+                                                    </div>
                                                     <div className="flex gap-2 mt-0.5">
                                                         <span className="text-xs text-muted-foreground font-mono bg-muted/50 px-1.5 py-0.5 rounded w-fit">ID: {user.id}</span>
                                                         <span className="text-xs text-primary/80 font-mono bg-primary/5 px-1.5 py-0.5 rounded w-fit">Ref: {user.referral_code}</span>
@@ -220,15 +233,28 @@ export const GenerationUserList: React.FC<GenerationUserListProps> = ({
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className="relative">
-                                                <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-background group-hover:scale-110 transition-transform duration-300">
+                                                <div className={cn(
+                                                    "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-background group-hover:scale-110 transition-transform duration-300",
+                                                    user.status === 'active' ? "bg-linear-to-br from-green-500 to-emerald-600 text-white" : "bg-linear-to-br from-slate-400 to-slate-500 text-white"
+                                                )}>
                                                     {getInitials(user.name)}
                                                 </div>
-                                                <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-card flex items-center justify-center">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+                                                <div className={cn(
+                                                    "absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-card flex items-center justify-center",
+                                                    user.status === 'active' ? "bg-green-500" : "bg-slate-400"
+                                                )}>
+                                                    <div className={cn("w-1.5 h-1.5 rounded-full bg-white", user.status === 'active' && "animate-pulse")}></div>
                                                 </div>
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="font-semibold text-foreground group-hover:text-primary transition-colors text-base">{user.name}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-semibold text-foreground group-hover:text-primary transition-colors text-base">{user.name}</span>
+                                                    {user.status === 'active' ? (
+                                                        <span className="text-[10px] bg-green-500/10 text-green-600 px-1.5 py-0.5 rounded-full font-bold border border-green-500/20 uppercase tracking-tighter">Active</span>
+                                                    ) : (
+                                                        <span className="text-[10px] bg-slate-500/10 text-slate-600 px-1.5 py-0.5 rounded-full font-bold border border-slate-500/20 uppercase tracking-tighter">Inactive</span>
+                                                    )}
+                                                </div>
                                                 <div className="flex flex-wrap gap-2 mt-0.5">
                                                     <span className="text-xs text-muted-foreground font-mono bg-muted/50 px-1.5 py-0.5 rounded w-fit">ID: {user.id}</span>
                                                     <span className="text-xs text-primary/80 font-mono bg-primary/5 px-1.5 py-0.5 rounded w-fit">Ref: {user.referral_code}</span>

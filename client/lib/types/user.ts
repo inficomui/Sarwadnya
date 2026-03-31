@@ -108,6 +108,7 @@ export interface UserDashboardResponse {
             total_team: number;
             direct_referrals: number;
         };
+        notice?: string;
     };
 }
 

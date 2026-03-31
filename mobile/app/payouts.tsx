@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PayoutCard } from '../components/payouts/PayoutCard';
+import { PayoutSlipModal } from '../components/payouts/PayoutSlipModal';
 import { PayoutSummary } from '../components/payouts/PayoutSummary';
 import { FontSize, Spacing, ThemeColors } from '../constants/Theme';
 import { useTheme } from '../context/ThemeContext';
@@ -26,6 +27,9 @@ export default function PayoutsScreen() {
 
     const [page, setPage] = useState(1);
     const [payoutsList, setPayoutsList] = useState<Payout[]>([]);
+    const [selectedPayout, setSelectedPayout] = useState<Payout | null>(null);
+    const [isSlipOpen, setIsSlipOpen] = useState(false);
+    
     const { data, isLoading, isFetching, refetch } = useGetMyPayoutsQuery({ page });
 
     const summary = data?.data?.summary;
@@ -53,8 +57,13 @@ export default function PayoutsScreen() {
         }
     };
 
+    const handleViewSlip = (payout: Payout) => {
+        setSelectedPayout(payout);
+        setIsSlipOpen(true);
+    };
+
     const renderItem = ({ item }: { item: Payout }) => (
-        <PayoutCard payout={item} />
+        <PayoutCard payout={item} onViewSlip={handleViewSlip} />
     );
 
     const renderHeader = () => (
@@ -125,6 +134,12 @@ export default function PayoutsScreen() {
                     showsVerticalScrollIndicator={false}
                 />
             )}
+
+            <PayoutSlipModal
+                visible={isSlipOpen}
+                onClose={() => setIsSlipOpen(false)}
+                payout={selectedPayout}
+            />
         </SafeAreaView>
     );
 }

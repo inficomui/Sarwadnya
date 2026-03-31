@@ -8,20 +8,10 @@ import * as z from "zod";
  * Matches the payload for /api/user/login
  */
 export const loginSchema = z.object({
-    login: z
+    email: z
         .string()
-        .min(1, "Email or phone number is required")
-        .refine(
-            (value) => {
-                // Check if it's a valid email or phone number
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                const phoneRegex = /^[0-9]{10}$/;
-                return emailRegex.test(value) || phoneRegex.test(value);
-            },
-            {
-                message: "Please enter a valid email address or 10-digit phone number",
-            }
-        ),
+        .min(1, "Referral ID is required")
+        .min(3, "Please enter a valid Referral ID"),
     password: z
         .string()
         .min(6, "Password must be at least 6 characters")

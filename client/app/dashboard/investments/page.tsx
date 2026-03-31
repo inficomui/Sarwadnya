@@ -32,7 +32,11 @@ export default function InvestmentsPage() {
 
     // Filter investments based on search
     const filteredInvestments = React.useMemo(() => {
-        return investments?.filter((investment: Transfer) =>
+        if (!investments) return [];
+        const sorted = [...investments].sort((a, b) => 
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+        return sorted.filter((investment: Transfer) =>
             investment.amount.toString().includes(search) ||
             investment.reference_id?.toLowerCase().includes(search.toLowerCase()) ||
             investment.method?.toLowerCase().includes(search.toLowerCase())

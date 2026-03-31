@@ -58,9 +58,20 @@ export const useAuth = () => {
             // Dispatch/Storage handled by API matcher
             return { success: true, data: result };
         } catch (error: any) {
+            let errorMessage = error?.data?.message || "Registration failed";
+
+            // Handle Laravel-style validation errors
+            if (error?.data?.errors) {
+                const errorMessages = Object.values(error.data.errors).flat() as string[];
+                if (errorMessages.length > 0) {
+                    errorMessage = errorMessages.join(" ");
+                }
+            }
+
             return {
                 success: false,
-                error: error?.data?.message || "Registration failed",
+                error: errorMessage,
+                errors: error?.data?.errors
             };
         }
     };

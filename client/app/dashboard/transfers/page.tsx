@@ -25,6 +25,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 // Extracted Components
 import PaymentDetailsCard from '@/components/dashboard/PaymentDetailsCard';
 import InvestmentHistory from '@/components/dashboard/InvestmentHistory';
+import DashboardWarnings from '@/components/dashboard/DashboardWarnings';
 
 const transferSchema = z.object({
     amount: z.number().min(10000, "Minimum amount is 10,000").refine(val => val % 10000 === 0, "Amount must be in multiples of 10,000"),
@@ -109,6 +110,13 @@ export default function TransfersPage() {
 
     return (
         <div className="space-y-8 pb-10">
+            <DashboardWarnings
+                isRestricted={dashboardData?.data?.profile?.is_payout_restricted || false}
+                kycStatus={dashboardData?.data?.profile?.kyc_status}
+                earningLimitReached={dashboardData?.data?.earning_limit?.reached || false}
+                earningLimitMessage={dashboardData?.data?.earning_limit?.message}
+                companySupportNotice={dashboardData?.data?.notice}
+            />
             <div>
                 <h1 className="text-3xl font-bold bg-linear-to-r from-primary to-amber-600 bg-clip-text text-transparent">Investment Request</h1>
                 <p className="text-muted-foreground mt-1">Submit a new investment request or view your history.</p>
@@ -171,7 +179,7 @@ export default function TransfersPage() {
                                 </div>
                             )}
 
-                            <button type="submit" disabled={isCreatingTransfer || isInvestingWallet} className="w-full bg-primary text-black font-bold py-3 rounded-xl hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2">
+                            <button type="submit" disabled={isCreatingTransfer || isInvestingWallet || !!dashboardData?.data?.notice} className="w-full bg-primary text-black font-bold py-3 rounded-xl hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2">
                                 {(isCreatingTransfer || isInvestingWallet) ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
                                 {selectedMethod === 'Wallet' ? 'Invest from Wallet' : 'Submit Investment'}
                             </button>

@@ -34,7 +34,13 @@ export default function WalletTransactions({ transactions = [], isLoading }: Wal
 
     // Client-side filtering
     const safeTransactions = Array.isArray(transactions) ? transactions : [];
-    const filteredTransactions = safeTransactions.filter(t => {
+    const sortedTransactions = React.useMemo(() => {
+        return [...safeTransactions].sort((a, b) => 
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+    }, [safeTransactions]);
+
+    const filteredTransactions = sortedTransactions.filter(t => {
         const matchesSearch = t.description.toLowerCase().includes(search.toLowerCase()) ||
             t.amount.toString().includes(search) ||
             t.id.toString().includes(search);

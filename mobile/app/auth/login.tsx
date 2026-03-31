@@ -26,7 +26,7 @@ const { width, height } = Dimensions.get('window');
 export default function LoginScreen() {
     const router = useRouter();
     const { colors, isDark } = useTheme();
-    const [email, setEmail] = useState('');
+    const [referralId, setReferralId] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
@@ -47,17 +47,17 @@ export default function LoginScreen() {
     }, [user, lockType, hasSkippedSetup]);
 
     const handleLogin = async () => {
-        if (!email || !password) {
+        if (!referralId || !password) {
             Toast.show({
                 type: 'error',
                 text1: 'Required Fields',
-                text2: 'Please enter both email/phone and password',
+                text2: 'Please enter both Referral ID and password',
             });
             return;
         }
 
         try {
-            await loginUser({ email, password }).unwrap();
+            await loginUser({ email: referralId, password }).unwrap();
             Toast.show({
                 type: 'success',
                 text1: 'Welcome!',
@@ -92,15 +92,15 @@ export default function LoginScreen() {
                     <Text style={styles.formTitle}>Sign In</Text>
 
                     <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Email or Phone</Text>
+                        <Text style={styles.label}>Referral ID</Text>
                         <View style={styles.inputWrapper}>
-                            <Ionicons name="mail-outline" size={20} color={colors.text.muted} style={styles.inputIcon} />
+                            <Ionicons name="shield-checkmark-outline" size={20} color={colors.text.muted} style={styles.inputIcon} />
                             <TextInput
                                 style={styles.input}
-                                placeholder="Enter email or phone"
+                                placeholder="Enter Referral ID"
                                 placeholderTextColor={colors.text.muted}
-                                value={email}
-                                onChangeText={setEmail}
+                                value={referralId}
+                                onChangeText={setReferralId}
                                 autoCapitalize="none"
                             />
                         </View>

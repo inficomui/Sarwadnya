@@ -2,16 +2,17 @@ import { formatCurrency } from '@/utils/currency';
 import { formatDate } from '@/utils/date';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { BorderRadius, FontSize, Shadow, Spacing, ThemeColors } from '../../constants/Theme';
 import { useTheme } from '../../context/ThemeContext';
 import { Payout } from '../../lib/types';
 
 interface PayoutCardProps {
     payout: Payout;
+    onViewSlip?: (payout: Payout) => void;
 }
 
-export const PayoutCard: React.FC<PayoutCardProps> = ({ payout }) => {
+export const PayoutCard: React.FC<PayoutCardProps> = ({ payout, onViewSlip }) => {
     const { colors, isDark } = useTheme();
     const styles = useMemo(() => createStyles(colors, isDark), [colors, isDark]);
 
@@ -66,6 +67,17 @@ export const PayoutCard: React.FC<PayoutCardProps> = ({ payout }) => {
                         <Text style={styles.totalLabel}>Net Credited</Text>
                         <Text style={styles.totalValue}>{formatCurrency(Number(payout.net_amount || payout.amount))}</Text>
                     </View>
+                </View>
+            )}
+            
+            {onViewSlip && payout.status?.toLowerCase() !== 'unmatured' && (
+                <View style={styles.actionContainer}>
+                    <TouchableOpacity 
+                        style={[styles.viewSlipBtn, { backgroundColor: colors.primary.start + '15' }]} 
+                        onPress={() => onViewSlip(payout)}
+                    >
+                        <Text style={[styles.viewSlipText, { color: colors.primary.start }]}>VIEW PAYSLIP</Text>
+                    </TouchableOpacity>
                 </View>
             )}
         </View>
@@ -158,5 +170,23 @@ const createStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create
         fontSize: 11,
         fontWeight: 'bold',
         color: colors.status.success,
+    },
+    actionContainer: {
+        marginTop: Spacing.md,
+        paddingTop: Spacing.sm,
+        borderTopWidth: 1,
+        borderTopColor: colors.border,
+        borderStyle: 'dashed',
+    },
+    viewSlipBtn: {
+        paddingVertical: 10,
+        borderRadius: BorderRadius.sm,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    viewSlipText: {
+        fontSize: FontSize.xs,
+        fontWeight: 'bold',
+        letterSpacing: 0.5,
     },
 });

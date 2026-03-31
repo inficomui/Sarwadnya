@@ -121,37 +121,29 @@ const PayoutSlipDialog: React.FC<PayoutSlipDialogProps> = ({ isOpen, onClose, pa
                             <div className="relative w-16 h-16 md:w-20 md:h-20 shrink-0 bg-white p-2 border border-slate-100 rounded-xl shadow-sm">
                                 <Image
                                     src="/sarwadnya-nav-logo.png"
-                                    alt="Sarwadnya Finance"
+                                    alt="Shree Sarwadnya All in one Solutions"
                                     fill
                                     className="object-contain p-1"
                                 />
                             </div>
                             <div>
-                                <h1 className="text-xl md:text-3xl font-black text-[#B8860B] italic tracking-tight uppercase leading-tight">
-                                    Sarwadnya Finance
+                                <h1 className="text-lg md:text-2xl font-black text-[#B8860B] italic tracking-tight uppercase leading-tight max-w-[200px] md:max-w-xs">
+                                    Shree Sarwadnya All in one Solutions
                                 </h1>
                                 <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-widest">Grow With Success</p>
                             </div>
                         </div>
 
                         <div className="text-center md:text-right space-y-1 md:space-y-1.5 max-w-sm">
-                            <p className="text-[10px] font-medium text-slate-700 flex items-center justify-center md:justify-end gap-2">
-                                <MapPin className="w-3 h-3 text-primary shrink-0" />
-                                Sr No. 85/2c, Office No. 301, 302, 3rd Floor, Parakh Capital, Hadapsar, Pune - 411028
-                            </p>
                             <div className="flex flex-col md:flex-row items-center md:justify-end gap-1 md:gap-3">
                                 <p className="text-[10px] font-medium text-slate-700 flex items-center gap-1.5">
-                                    <Phone className="w-3 h-3 text-primary" />
-                                    +91 9172956383
-                                </p>
-                                <p className="text-[10px] font-medium text-slate-700 flex items-center gap-1.5">
                                     <Mail className="w-3 h-3 text-primary" />
-                                    info@sarwadnyafinance.com
+                                    info@shreesarwadnya.com
                                 </p>
                             </div>
                             <p className="text-[10px] font-medium text-slate-700 flex items-center justify-center md:justify-end gap-2">
                                 <Globe className="w-3 h-3 text-primary" />
-                                www.sarwadnyafinance.com
+                                www.shreesarwadnya.com
                             </p>
                         </div>
                     </div>
@@ -177,7 +169,6 @@ const PayoutSlipDialog: React.FC<PayoutSlipDialogProps> = ({ isOpen, onClose, pa
                                 <DetailRow label="User Name" value={`ID: ${user?.id || payout.user?.id || '---'}`} />
                                 <DetailRow label="Phone No." value={user?.phone_number || payout.user?.phone_number || '---'} />
                                 <DetailRow label="Email" value={user?.email || payout.user?.email || '---'} />
-                                <DetailRow label="City" value="Pune, MH" />
                             </div>
                         </div>
 
@@ -256,7 +247,7 @@ const PayoutSlipDialog: React.FC<PayoutSlipDialogProps> = ({ isOpen, onClose, pa
                             <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Authorized Officer</span>
                         </div>
                         <div className="text-[9px] font-bold text-slate-400 italic text-center md:text-right max-w-[280px] leading-relaxed">
-                            Note: This is an automatically generated system document. No physical signature is required for verification. Generated via Sarwadnya Finance ERP.
+                            Note: This is an automatically generated system document. No physical signature is required for verification. Generated via Shree Sarwadnya All in one Solutions ERP.
                         </div>
                     </div>
                 </div>

@@ -1,10 +1,46 @@
 // REFERRAL & TREE TYPES
 
+export interface TreeLevelInfo {
+    total: number;
+    active: number;
+    inactive: number;
+    level_no: number;
+    unlocked: boolean;
+    is_active: boolean;
+}
+
 export interface TreeSummaryResponse {
     status: string;
     data: {
-        total_referrals: number;
-        levels: Record<string, number>;
+        summary: {
+            total_team: number;
+            total_active: number;
+            total_inactive: number;
+            total_team_investment: number;
+            total_direct_investment: number;
+            unlocked_levels: number;
+        };
+        levels: Record<string, TreeLevelInfo>;
+    };
+}
+
+export interface LevelStatusItem {
+    level: number;
+    is_unlocked: boolean;
+    required_business: number;
+    current_team_business: number;
+    status: string;
+    description: string;
+}
+
+export interface LevelStatusResponse {
+    status: string;
+    data: {
+        user_id: number;
+        has_active_investment: boolean;
+        total_team_business: number;
+        unlocked_levels: number;
+        levels: Record<string, LevelStatusItem>;
     };
 }
 

@@ -1,6 +1,13 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { createBaseQuery } from "./sharedBaseQuery";
-import type { GetPayoutsResponse, GetPayoutsParams, GetPayoutsByRangeResponse, GetPayoutsByRangeParams } from "../../lib/types";
+import type { 
+    GetPayoutsResponse, 
+    GetPayoutsParams, 
+    GetPayoutsByRangeResponse, 
+    GetPayoutsByRangeParams,
+    GetWeeklyReportResponse,
+    GetWeeklyReportParams
+} from "../../lib/types";
 
 export const payoutApi = createApi({
     reducerPath: "payoutApi",
@@ -26,10 +33,21 @@ export const payoutApi = createApi({
             }),
             providesTags: ["Payouts"],
         }),
+
+        // User: Get Weekly Payout Report (Cycle-wise)
+        getWeeklyReport: builder.query<GetWeeklyReportResponse, GetWeeklyReportParams | void>({
+            query: (params) => ({
+                url: "/user/payouts/weekly-report",
+                method: "GET",
+                params: params || {},
+            }),
+            providesTags: ["Payouts"],
+        }),
     }),
 });
 
 export const {
     useGetMyPayoutsQuery,
-    useGetPayoutsByRangeQuery
+    useGetPayoutsByRangeQuery,
+    useGetWeeklyReportQuery
 } = payoutApi;

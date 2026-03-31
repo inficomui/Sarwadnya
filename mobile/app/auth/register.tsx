@@ -102,6 +102,24 @@ export default function RegisterScreen() {
             }
         } catch (error: any) {
             console.error('Registration error:', error);
+            
+            let errorMessage = 'Registration failed';
+            
+            if (error?.data?.errors) {
+                // Combine all validation errors into one message
+                const allErrors = Object.values(error.data.errors).flat();
+                if (allErrors.length > 0) {
+                    errorMessage = allErrors.join(' ');
+                }
+            } else if (error?.data?.message) {
+                errorMessage = error.data.message;
+            }
+
+            Toast.show({
+                type: 'error',
+                text1: 'Registration Failed',
+                text2: errorMessage,
+            });
         }
     };
 
